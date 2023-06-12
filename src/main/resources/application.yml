@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: "postgres"
+    password: "root"
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        default_schema: "public"
+jwt:
+  secret:
+    key: "thisissecretkeyformypersonalspringbootapp"
+  expiration: 86400000
