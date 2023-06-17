@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
 	id("java")
@@ -8,6 +9,7 @@ plugins {
 	id("org.jetbrains.kotlin.plugin.jpa") version "1.9.0-Beta"
 }
 
+apply(plugin = "org.springframework.boot")
 apply(plugin = "io.spring.dependency-management")
 
 group = "com.inhouse"
@@ -26,9 +28,11 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-
+	runtimeOnly("org.springframework.boot:spring-boot-gradle-plugin:3.1.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation ("io.jsonwebtoken:jjwt-api:0.11.2")
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-ws
+	implementation("org.springframework.boot:spring-boot-starter-ws:1.1.8.RELEASE")
 // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 // https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
@@ -45,10 +49,14 @@ dependencies {
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "17"
+		jvmTarget = "19"
 	}
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+
+tasks.getByName<BootJar>("bootJar") {
+	enabled = true
 }
