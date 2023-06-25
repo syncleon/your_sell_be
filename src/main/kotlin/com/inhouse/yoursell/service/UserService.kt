@@ -2,8 +2,8 @@ package com.inhouse.yoursell.service
 
 import com.inhouse.yoursell.dto.UserDto
 import com.inhouse.yoursell.dto.toDto
-import com.inhouse.yoursell.entity.User
-import com.inhouse.yoursell.exceptions.UserNotFoundException
+import com.inhouse.yoursell.entity.user.User
+import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.UserRepo
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ class UserService(
         val user = userRepo.findById(id)
         return if (!user.isEmpty) {
             user.get()
-        } else throw UserNotFoundException("User not found.")
+        } else throw NotFoundException("User not found.")
     }
 
     fun findAll(): MutableList<UserDto> {

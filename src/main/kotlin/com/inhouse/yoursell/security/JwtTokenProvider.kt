@@ -1,6 +1,6 @@
 package com.inhouse.yoursell.security
 
-import com.inhouse.yoursell.entity.User
+import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.service.UserService
 import org.springframework.security.oauth2.jwt.*
 import org.springframework.stereotype.Component

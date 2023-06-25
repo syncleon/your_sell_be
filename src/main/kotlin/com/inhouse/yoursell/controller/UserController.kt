@@ -2,7 +2,7 @@ package com.inhouse.yoursell.controller
 
 import com.inhouse.yoursell.config.toUser
 import com.inhouse.yoursell.dto.toDto
-import com.inhouse.yoursell.exceptions.UserNotFoundException
+import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -31,7 +31,7 @@ class UserController(
     ): ResponseEntity<Any> {
         return try {
             ResponseEntity.ok(userService.findById(id).toDto())
-        } catch (e: UserNotFoundException) {
+        } catch (e: NotFoundException) {
             ResponseEntity.badRequest().body(e.message)
         }
     }

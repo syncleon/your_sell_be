@@ -1,4 +1,4 @@
-package com.inhouse.yoursell.entity
+package com.inhouse.yoursell.entity.user
 
 import jakarta.persistence.*
 

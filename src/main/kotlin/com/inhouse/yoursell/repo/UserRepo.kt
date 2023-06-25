@@ -1,6 +1,6 @@
 package com.inhouse.yoursell.repo
 
-import com.inhouse.yoursell.entity.User
+import com.inhouse.yoursell.entity.user.User
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 

@@ -3,11 +3,11 @@ package com.inhouse.yoursell.controller
 import com.inhouse.yoursell.dto.LoginResponseDto
 import com.inhouse.yoursell.dto.LoginUserDto
 import com.inhouse.yoursell.dto.RegisterUserDto
-import com.inhouse.yoursell.entity.ERole
-import com.inhouse.yoursell.entity.Role
-import com.inhouse.yoursell.entity.User
-import com.inhouse.yoursell.exceptions.UserAlreadyExistsException
-import com.inhouse.yoursell.exceptions.UserNotFoundException
+import com.inhouse.yoursell.entity.user.ERole
+import com.inhouse.yoursell.entity.user.Role
+import com.inhouse.yoursell.entity.user.User
+import com.inhouse.yoursell.exceptions.AlreadyExistsException
+import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.RoleRepo
 import com.inhouse.yoursell.security.Hashing
 import com.inhouse.yoursell.security.JwtTokenProvider
@@ -30,16 +30,19 @@ class AuthController(
     @PostMapping("/signin")
     fun login(@RequestBody payload: LoginUserDto): ResponseEntity<Any> {
         return try {
+            if (!userService.existsByName(payload.username)) {
+                throw NotFoundException("Credentials wrong, check username or password.")
+            }
             val user = userService.findByName(payload.username)
             if (!hashing.checkBcrypt(payload.password, user.password)) {
-                throw UserNotFoundException("Credentials wrong, check username or password.")
+                throw NotFoundException("Credentials wrong, check username or password.")
             }
             ResponseEntity.ok().body(
                 LoginResponseDto(
                     token = jwtTokenProvider.createToken(user)
                 )
             )
-        } catch (e: UserNotFoundException) {
+        } catch (e: NotFoundException) {
             ResponseEntity.badRequest().body(e.message)
         }
     }
@@ -50,7 +53,7 @@ class AuthController(
         val roles = mutableSetOf<Role>()
         return try {
             if (userService.existsByName(payload.username)) {
-                throw UserAlreadyExistsException("User with this name already exists.")
+                throw AlreadyExistsException("User with this name already exists.")
             }
             val user = User(
                 username = payload.username,
