@@ -1,7 +1,5 @@
 package com.inhouse.yoursell.dto
 
-import com.inhouse.yoursell.entity.vehicle.enums.EModel
-
 data class LoginUserDto(
     val username: String,
     val password: String,
@@ -14,11 +12,10 @@ data class RegisterUserDto(
 )
 
 data class RegisterVehicleDto(
-    val vin: String,
-    val year: String,
-    val producer: String,
-    val mileage: Double,
-    val highlights: String,
-    val expectedBid: Double,
-    val damaged: Boolean
+    var make: String,
+    var model: String,
+    var mileage: Double,
+    var vin: String,
+    var year: String,
+    var images: MutableList<String>
 )

@@ -36,6 +36,17 @@ class UserController(
         }
     }
 
+    @GetMapping("/current")
+    fun getCurrentUser(
+        authentication: Authentication,
+    ): ResponseEntity<Any> {
+        return try {
+            ResponseEntity.ok(authentication.toUser().toDto())
+        } catch (e: NotFoundException) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
+
     @DeleteMapping
     fun deleteUser(
         authentication: Authentication

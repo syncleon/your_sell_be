@@ -34,8 +34,7 @@ data class User(
         return "User(id=$id, " +
                 "username='$username', " +
                 "password='$password', " +
-                "email='$email', userRoles=$userRoles"
+                "email='$email', " +
+                "userRoles=$userRoles"
     }
-
-
 }

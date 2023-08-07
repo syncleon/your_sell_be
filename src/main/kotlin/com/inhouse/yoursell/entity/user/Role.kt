@@ -10,5 +10,5 @@ data class Role (
     var id: Long,
     @Enumerated(EnumType.STRING)
     @Column(name = "name")
-    var name: ERole
+    var name: ERole = ERole.ROLE_USER
 )

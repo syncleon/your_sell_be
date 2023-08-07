@@ -2,6 +2,8 @@ package com.inhouse.yoursell.service
 
 import com.inhouse.yoursell.config.toUser
 import com.inhouse.yoursell.dto.RegisterVehicleDto
+import com.inhouse.yoursell.dto.VehicleDto
+import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import com.inhouse.yoursell.exceptions.AlreadyExistsException
@@ -22,29 +24,37 @@ class VehicleService (
         }
     }
 
-    fun findAll(): List<Vehicle> {
-        return vehicleRepo.findAll()
+    fun findAll(): MutableList<VehicleDto> {
+        val vehicleList = vehicleRepo.findAll()
+        val vehicleDtoList = mutableListOf<VehicleDto>()
+        vehicleList.forEach { vehicle ->
+            val vehicleDto = vehicle.toDto()
+            vehicleDtoList.add(vehicleDto)
+        }
+        return vehicleDtoList
     }
 
     fun findBySeller(user: User): List<Vehicle> {
         return vehicleRepo.findBySeller(user)
     }
 
-    fun createVehicle(authentication: Authentication, payload: RegisterVehicleDto): Vehicle {
+    fun createVehicle(
+        authentication: Authentication,
+        payload: RegisterVehicleDto
+    ): VehicleDto {
         val authUser = authentication.toUser()
         if (vehicleRepo.existsByVinAndSeller(payload.vin, authUser)) {
             throw AlreadyExistsException("Car with this VIN already added!")
         }
         val vehicle = Vehicle(
             seller = authUser,
+            make = payload.make,
+            model = payload.model,
+            mileage = payload.mileage,
             vin = payload.vin,
             year = payload.year,
-            producer = payload.producer,
-            mileage = payload.mileage,
-            highlights = payload.highlights,
-            expectedBid = payload.expectedBid,
-            damaged = payload.damaged
+            images = payload.images
         )
-        return vehicleRepo.save(vehicle)
+        return vehicleRepo.save(vehicle).toDto()
     }
 }
