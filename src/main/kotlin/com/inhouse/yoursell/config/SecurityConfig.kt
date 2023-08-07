@@ -37,7 +37,7 @@ class SecurityConfig(
                 authorizeRequests
                     .requestMatchers(HttpMethod.POST, "/api/v1/signin").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/signup").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/vehicles/all").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/vehicles/**").permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()
                     .anyRequest().permitAll()

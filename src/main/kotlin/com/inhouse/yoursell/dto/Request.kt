@@ -14,8 +14,9 @@ data class RegisterUserDto(
 data class RegisterVehicleDto(
     var make: String,
     var model: String,
-    var mileage: Double,
+    var mileage: Int,
     var vin: String,
     var year: String,
+    var expectedBid: Int,
     var images: MutableList<String>
 )

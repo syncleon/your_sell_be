@@ -26,6 +26,17 @@ class VehicleController (
         }
     }
 
+    @GetMapping("/{id}")
+    fun getVehicle(
+        @PathVariable id: Long): ResponseEntity<Any>
+    {
+        return try {
+            ResponseEntity.ok(vehicleService.findById(id))
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
+
     @GetMapping("/all")
     fun getAll(): ResponseEntity<Any> {
         return try {

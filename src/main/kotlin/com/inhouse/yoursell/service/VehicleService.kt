@@ -17,11 +17,11 @@ class VehicleService (
     private val vehicleRepo: VehicleRepo
 ) {
 
-    fun findById(id: Long) {
-        val vehicle = vehicleRepo.findById(id)
-        if (vehicle.isEmpty) {
+    fun findById(id: Long): VehicleDto {
+        val vehicle = vehicleRepo.findById(id).orElseThrow {
             throw NotFoundException("Vehicle $id not found!")
         }
+        return vehicle.toDto()
     }
 
     fun findAll(): MutableList<VehicleDto> {
@@ -53,6 +53,7 @@ class VehicleService (
             mileage = payload.mileage,
             vin = payload.vin,
             year = payload.year,
+            expectedBid = payload.expectedBid,
             images = payload.images
         )
         return vehicleRepo.save(vehicle).toDto()

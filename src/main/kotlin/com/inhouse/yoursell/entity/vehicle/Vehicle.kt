@@ -28,7 +28,7 @@ data class Vehicle(
     var model: String = "",
 
     @Column(name = "mileage", nullable = false)
-    var mileage: Double = 0.0,
+    var mileage: Int = 0,
 
     @Column(name = "vin", nullable = false)
     var vin: String = "",
@@ -37,7 +37,7 @@ data class Vehicle(
     var year: String = "",
 
     @Column(name="expected_bid", nullable = false)
-    var expectedBid: Double = 0.0,
+    var expectedBid: Int = 0,
 
     @Column(name="damaged", nullable = false)
     var damaged: Boolean = false,
