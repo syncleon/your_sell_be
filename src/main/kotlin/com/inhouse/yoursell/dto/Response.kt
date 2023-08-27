@@ -29,6 +29,7 @@ data class VehicleDto(
     var expectedBid: Int,
     var damaged: Boolean,
     var sellerId: Long,
+    var sellerUsername: String,
     var images: MutableList<ImageDto>,
     var deleted: Boolean
 )

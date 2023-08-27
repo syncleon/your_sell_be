@@ -33,6 +33,7 @@ fun Vehicle.toDto(): VehicleDto {
         expectedBid = expectedBid,
         damaged = damaged,
         sellerId = seller.id,
+        sellerUsername = seller.username,
         images = images.stream().map(Image::toDto).collect(Collectors.toList()),
         deleted = deleted
     )
