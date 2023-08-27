@@ -31,11 +31,8 @@ dependencies {
 	runtimeOnly("org.springframework.boot:spring-boot-gradle-plugin:3.1.0")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation ("io.jsonwebtoken:jjwt-api:0.11.2")
-	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-ws
 	implementation("org.springframework.boot:spring-boot-starter-ws:1.1.8.RELEASE")
-// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
-// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-jackson
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly ("org.apache.commons:commons-lang3:3.0")
 	runtimeOnly("org.postgresql:postgresql")

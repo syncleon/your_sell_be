@@ -1,5 +1,7 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.image.Image
+
 data class LoginUserDto(
     val username: String,
     val password: String,
@@ -17,6 +19,5 @@ data class RegisterVehicleDto(
     var mileage: Int,
     var vin: String,
     var year: String,
-    var expectedBid: Int,
-    var images: MutableList<String>
+    var expectedBid: Int
 )

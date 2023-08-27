@@ -20,13 +20,22 @@ data class User(
     @Column(name = "email", nullable = false)
     var email: String = "",
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "user_roles",
+    @ManyToMany(
+        fetch = FetchType.EAGER
+    )
+    @JoinTable(
+        name = "user_roles",
         joinColumns = [JoinColumn(name = "user_id")],
-        inverseJoinColumns = [JoinColumn(name = "role_id")])
+        inverseJoinColumns = [JoinColumn(name = "role_id")]
+    )
     var userRoles: MutableSet<Role> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "seller", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
+    @OneToMany(
+        mappedBy = "seller",
+        cascade = [CascadeType.ALL],
+        orphanRemoval = true,
+        fetch = FetchType.EAGER
+    )
     var vehicles: MutableList<Vehicle> = mutableListOf()
 
     ) : BaseEntity() {
@@ -35,6 +44,7 @@ data class User(
                 "username='$username', " +
                 "password='$password', " +
                 "email='$email', " +
-                "userRoles=$userRoles"
+                "userRoles=$userRoles," +
+                "vehicles=$vehicles)"
     }
 }

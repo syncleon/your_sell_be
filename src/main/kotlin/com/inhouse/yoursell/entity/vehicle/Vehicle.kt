@@ -1,6 +1,7 @@
 package com.inhouse.yoursell.entity.vehicle
 
 import com.inhouse.yoursell.entity.BaseEntity
+import com.inhouse.yoursell.entity.image.Image
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
 
@@ -15,11 +16,6 @@ data class Vehicle(
     @ManyToOne
     @JoinColumn(name = "user_id")
     var seller: User = User(),
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "vehicle_images", joinColumns = [JoinColumn(name = "vehicle_id")])
-    @Column(name = "image_url")
-    val images: MutableList<String> = mutableListOf(),
 
     @Column(name = "make", nullable = false)
     var make: String = "",
@@ -42,20 +38,28 @@ data class Vehicle(
     @Column(name="damaged", nullable = false)
     var damaged: Boolean = false,
 
-    ) : BaseEntity() {
+    @Column(name = "deleted", nullable = false)
+    var deleted: Boolean = false,
 
+    @OneToMany(
+        mappedBy = "vehicle",
+        cascade = [CascadeType.ALL],
+        fetch = FetchType.EAGER
+    )
+    var images: MutableList<Image> = mutableListOf()
+
+    ) : BaseEntity() {
     override fun toString(): String {
-        return "Vehicle" +
-                "(" +
-                "id=$id, " +
-                "seller=$seller, " +
-                "producer='$make'," +
-                "model=$model, " +
+        return "Vehicle(id=$id, " +
+                "seller=${seller.id}, " +
+                "make='$make', " +
+                "model='$model', " +
                 "mileage=$mileage, " +
                 "vin='$vin', " +
-                "year='$year'," +
+                "year='$year', " +
                 "expectedBid=$expectedBid, " +
-                "damaged=$damaged" +
-                ")"
+                "damaged=$damaged, " +
+                "deleted=$deleted, " +
+                "images=$images)"
     }
 }

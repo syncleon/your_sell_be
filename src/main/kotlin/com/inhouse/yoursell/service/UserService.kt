@@ -1,11 +1,14 @@
 package com.inhouse.yoursell.service
 
+import com.inhouse.yoursell.config.toUser
 import com.inhouse.yoursell.dto.UserDto
 import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.UserRepo
+import com.inhouse.yoursell.repo.VehicleRepo
 import jakarta.transaction.Transactional
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Service
 @Transactional
 class UserService(
     private val userRepo: UserRepo,
+    private val vehicleRepo: VehicleRepo
 ) {
     fun findById(id: Long): User {
         val user = userRepo.findById(id)
@@ -46,5 +50,4 @@ class UserService(
     fun delete(user: User) {
         return userRepo.delete(user)
     }
-
 }

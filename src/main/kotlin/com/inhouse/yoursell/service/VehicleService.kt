@@ -8,13 +8,17 @@ import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import com.inhouse.yoursell.exceptions.AlreadyExistsException
 import com.inhouse.yoursell.exceptions.NotFoundException
+import com.inhouse.yoursell.repo.UserRepo
 import com.inhouse.yoursell.repo.VehicleRepo
+import jakarta.transaction.Transactional
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 
 @Service
+@Transactional
 class VehicleService (
-    private val vehicleRepo: VehicleRepo
+    private val vehicleRepo: VehicleRepo,
+    private val userRepo: UserRepo
 ) {
 
     fun findById(id: Long): VehicleDto {
@@ -54,8 +58,16 @@ class VehicleService (
             vin = payload.vin,
             year = payload.year,
             expectedBid = payload.expectedBid,
-            images = payload.images
         )
         return vehicleRepo.save(vehicle).toDto()
+    }
+
+    fun softDeleteVehicle(authentication: Authentication, id: Long) {
+        val authUser = authentication.toUser()
+        val vehicle = vehicleRepo.findByIdAndSeller(id, authUser).orElseThrow {
+            throw NotFoundException("Vehicle $id not found!")
+        }
+        vehicle.deleted = true
+        vehicleRepo.save(vehicle)
     }
 }

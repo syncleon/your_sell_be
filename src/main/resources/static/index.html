@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css/style.css">
+  <title>Image Upload/Download</title>
+</head>
+<body>
+<h1>Image Upload/Download</h1>
+
+<!-- Image Upload Form -->
+<form id="uploadForm" enctype="multipart/form-data">
+  <input type="file" id="fileInput" name="files" multiple>
+  <button type="submit">Upload</button>
+</form>
+
+<!-- Uploaded Images Table -->
+<h2>Uploaded Images</h2>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Name</th>
+    <th>Size</th>
+    <th>Preview</th>
+    <th>VehicleId</th>
+    <th>Download</th>
+  </tr>
+  </thead>
+  <tbody id="imageTableBody">
+  <!-- Images will be displayed here -->
+  </tbody>
+</table>
+
+<script src="js/script.js"></script>
+</body>
+</html>

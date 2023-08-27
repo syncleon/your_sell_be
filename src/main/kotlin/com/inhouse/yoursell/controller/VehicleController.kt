@@ -59,4 +59,17 @@ class VehicleController (
             ResponseEntity.badRequest().body(e.message)
         }
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteVehicle(
+        authentication: Authentication,
+        @PathVariable id: Long
+    ): ResponseEntity<Any> {
+        return try {
+            vehicleService.softDeleteVehicle(authentication,id)
+            ResponseEntity.ok().body("Vehicle $id marked to be deleted")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
 }
