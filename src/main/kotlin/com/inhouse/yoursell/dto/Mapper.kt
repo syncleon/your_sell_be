@@ -1,6 +1,5 @@
 package com.inhouse.yoursell.dto
 
-import com.inhouse.yoursell.entity.image.Image
 import com.inhouse.yoursell.entity.user.Role
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
@@ -34,17 +33,7 @@ fun Vehicle.toDto(): VehicleDto {
         damaged = damaged,
         sellerId = seller.id,
         sellerUsername = seller.username,
-        images = images.stream().map(Image::toDto).collect(Collectors.toList()),
+        images = images,
         deleted = deleted
-    )
-}
-
-fun Image.toDto(): ImageDto {
-    return ImageDto(
-        id = id,
-        name = name,
-        contentType = contentType,
-        size = size,
-        vehicleId = vehicle.id
     )
 }

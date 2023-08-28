@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 
 
 @RestController
@@ -50,10 +51,11 @@ class VehicleController (
     @PostMapping
     fun createVehicle(
         authentication: Authentication,
-        @RequestBody payload: RegisterVehicleDto
+        @RequestPart("payload") payload: RegisterVehicleDto,
+        @RequestPart("images") images: MutableList<MultipartFile>
     ): ResponseEntity<Any> {
         return try {
-            val response = vehicleService.createVehicle(authentication, payload)
+            val response = vehicleService.createVehicle(authentication, payload, images)
             ResponseEntity.accepted().body("Created: $response")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)

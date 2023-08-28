@@ -1,7 +1,5 @@
 package com.inhouse.yoursell.dto
 
-import com.inhouse.yoursell.entity.image.Image
-
 data class LoginUserDto(
     val username: String,
     val password: String,

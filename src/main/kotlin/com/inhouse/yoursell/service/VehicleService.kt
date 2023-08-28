@@ -7,18 +7,31 @@ import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import com.inhouse.yoursell.exceptions.AlreadyExistsException
+import com.inhouse.yoursell.exceptions.FileStorageException
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.UserRepo
 import com.inhouse.yoursell.repo.VehicleRepo
 import jakarta.transaction.Transactional
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.core.io.Resource
+import org.springframework.core.io.UrlResource
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
+import java.io.IOException
+import java.net.MalformedURLException
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 
 @Service
 @Transactional
 class VehicleService (
     private val vehicleRepo: VehicleRepo,
-    private val userRepo: UserRepo
+    @Value("\${file.upload-dir}")
+    private val uploadDir: String
+
 ) {
 
     fun findById(id: Long): VehicleDto {
@@ -44,12 +57,10 @@ class VehicleService (
 
     fun createVehicle(
         authentication: Authentication,
-        payload: RegisterVehicleDto
+        payload: RegisterVehicleDto,
+        images: MutableList<MultipartFile>
     ): VehicleDto {
         val authUser = authentication.toUser()
-        if (vehicleRepo.existsByVinAndSeller(payload.vin, authUser)) {
-            throw AlreadyExistsException("Car with this VIN already added!")
-        }
         val vehicle = Vehicle(
             seller = authUser,
             make = payload.make,
@@ -58,8 +69,42 @@ class VehicleService (
             vin = payload.vin,
             year = payload.year,
             expectedBid = payload.expectedBid,
+            images = storeFiles(images)
         )
         return vehicleRepo.save(vehicle).toDto()
+    }
+
+    fun storeFiles(files: List<MultipartFile>): MutableList<String> {
+        val fileNames = mutableListOf<String>()
+
+        for (file in files) {
+            val fileName = "${System.currentTimeMillis()}_${file.originalFilename}"
+            val targetLocation: Path = Path.of(uploadDir).resolve(fileName)
+
+            try {
+                Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
+                fileNames.add(fileName)
+            } catch (ex: IOException) {
+                throw FileStorageException("Could not store file $fileName. Please try again!", ex)
+            }
+        }
+
+        return fileNames
+    }
+
+    fun loadFile(fileName: String): Resource {
+        try {
+            val filePath: Path = Paths.get(uploadDir).resolve(fileName)
+            val resource: Resource = UrlResource(filePath.toUri())
+
+            if (resource.exists() && resource.isReadable) {
+                return resource
+            } else {
+                throw FileStorageException("File $fileName not found or is not readable")
+            }
+        } catch (ex: MalformedURLException) {
+            throw FileStorageException("Malformed URL Exception for file: $fileName", ex)
+        }
     }
 
     fun softDeleteVehicle(authentication: Authentication, id: Long) {

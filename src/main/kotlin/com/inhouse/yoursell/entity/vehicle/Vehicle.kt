@@ -1,7 +1,6 @@
 package com.inhouse.yoursell.entity.vehicle
 
 import com.inhouse.yoursell.entity.BaseEntity
-import com.inhouse.yoursell.entity.image.Image
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
 
@@ -41,12 +40,12 @@ data class Vehicle(
     @Column(name = "deleted", nullable = false)
     var deleted: Boolean = false,
 
-    @OneToMany(
-        mappedBy = "vehicle",
-        cascade = [CascadeType.ALL],
-        fetch = FetchType.EAGER
-    )
-    var images: MutableList<Image> = mutableListOf()
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "vehicle_images",
+        joinColumns = [JoinColumn(name = "vehicle_id")])
+    @Column(name = "image_url")
+    val images: MutableList<String> = mutableListOf(),
 
     ) : BaseEntity() {
     override fun toString(): String {
