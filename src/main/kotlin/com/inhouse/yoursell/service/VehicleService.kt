@@ -6,10 +6,8 @@ import com.inhouse.yoursell.dto.VehicleDto
 import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
-import com.inhouse.yoursell.exceptions.AlreadyExistsException
 import com.inhouse.yoursell.exceptions.FileStorageException
 import com.inhouse.yoursell.exceptions.NotFoundException
-import com.inhouse.yoursell.repo.UserRepo
 import com.inhouse.yoursell.repo.VehicleRepo
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Value

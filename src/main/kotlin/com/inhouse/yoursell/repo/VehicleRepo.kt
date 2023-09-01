@@ -10,5 +10,4 @@ import java.util.Optional
 interface VehicleRepo: JpaRepository<Vehicle, Long> {
     fun findBySeller(user: User): List<Vehicle>
     fun findByIdAndSeller(id: Long, user: User): Optional<Vehicle>
-    fun existsByVinAndSeller(vin: String, user: User): Boolean
 }
