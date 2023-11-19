@@ -22,6 +22,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
+import java.util.*
 
 @Service
 @Transactional
@@ -32,7 +33,7 @@ class VehicleService (
 
 ) {
 
-    fun findById(id: Long): VehicleDto {
+    fun findById(id: UUID): VehicleDto {
         val vehicle = vehicleRepo.findById(id).orElseThrow {
             throw NotFoundException("Vehicle $id not found!")
         }
@@ -105,7 +106,7 @@ class VehicleService (
         }
     }
 
-    fun softDeleteVehicle(authentication: Authentication, id: Long) {
+    fun softDeleteVehicle(authentication: Authentication, id: UUID) {
         val authUser = authentication.toUser()
         val vehicle = vehicleRepo.findByIdAndSeller(id, authUser).orElseThrow {
             throw NotFoundException("Vehicle $id not found!")

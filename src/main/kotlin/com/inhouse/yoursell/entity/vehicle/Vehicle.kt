@@ -3,14 +3,17 @@ package com.inhouse.yoursell.entity.vehicle
 import com.inhouse.yoursell.entity.BaseEntity
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
+import org.hibernate.annotations.GenericGenerator
+import org.hibernate.annotations.Type
+import org.hibernate.annotations.UuidGenerator
+import java.util.*
 
 @Entity
 @Table(name = "vehicle")
 data class Vehicle(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "vehicle_id_seq")
-    @SequenceGenerator(name = "vehicle_id_seq", allocationSize = 1)
-    var id: Long = 0L,
+    @UuidGenerator
+    var id: UUID = UUID.randomUUID(),
 
     @ManyToOne
     @JoinColumn(name = "user_id")

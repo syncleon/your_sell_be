@@ -1,6 +1,7 @@
 package com.inhouse.yoursell.dto
 
 import com.inhouse.yoursell.entity.user.ERole
+import java.util.UUID
 
 data class LoginResponseDto(
     val token: String
@@ -19,7 +20,7 @@ data class UserDto(
 )
 
 data class VehicleDto(
-    var id: Long,
+    var id: UUID,
     var make: String,
     var model: String,
     var mileage: Int,

@@ -1,17 +1,17 @@
 package com.inhouse.yoursell.controller
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.inhouse.yoursell.config.toUser
 import com.inhouse.yoursell.dto.RegisterVehicleDto
-import com.inhouse.yoursell.dto.toDto
-import com.inhouse.yoursell.entity.vehicle.Vehicle
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.service.VehicleService
 import org.springframework.core.io.Resource
-import org.springframework.http.*
+import org.springframework.http.ContentDisposition
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import java.util.*
 
 
 @RestController
@@ -20,10 +20,10 @@ class VehicleController (
     private val vehicleService: VehicleService
 ) {
     @GetMapping
-    fun getVehicles(authentication: Authentication): ResponseEntity<Any> {
-        val authUser = authentication.toUser()
+    fun getVehicles(): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok(vehicleService.findBySeller(authUser).map { vehicle: Vehicle -> vehicle.toDto() })
+            val vehicles = vehicleService.findAll()
+            ResponseEntity.ok().body(vehicles)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }
@@ -31,7 +31,7 @@ class VehicleController (
 
     @GetMapping("/{id}")
     fun getVehicle(
-        @PathVariable id: Long): ResponseEntity<Any>
+        @PathVariable id: UUID): ResponseEntity<Any>
     {
         return try {
             ResponseEntity.ok(vehicleService.findById(id))
@@ -41,7 +41,7 @@ class VehicleController (
     }
 
     @GetMapping("/{id}/images")
-    fun getVehicleImages(@PathVariable id: Long): ResponseEntity<MutableList<String>> {
+    fun getVehicleImages(@PathVariable id: UUID): ResponseEntity<MutableList<String>> {
         return try {
             val images = vehicleService.findById(id).images
             ResponseEntity.ok().body(images)
@@ -70,16 +70,6 @@ class VehicleController (
             .body(fileResource)
     }
 
-    @GetMapping("/all")
-    fun getAll(): ResponseEntity<Any> {
-        return try {
-            val vehicles = vehicleService.findAll()
-            ResponseEntity.ok().body(vehicles)
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
-        }
-    }
-
     @PostMapping
     fun createVehicle(
         authentication: Authentication,
@@ -97,7 +87,7 @@ class VehicleController (
     @DeleteMapping("/{id}")
     fun deleteVehicle(
         authentication: Authentication,
-        @PathVariable id: Long
+        @PathVariable id: UUID
     ): ResponseEntity<Any> {
         return try {
             vehicleService.softDeleteVehicle(authentication,id)
