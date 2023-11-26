@@ -67,20 +67,31 @@ class VehicleService (
             mileage = payload.mileage,
             vin = payload.vin,
             year = payload.year,
-            expectedBid = payload.expectedBid,
-            images = storeFiles(images)
+            expectedBid = payload.expectedBid
         )
-        return vehicleRepo.save(vehicle).toDto()
+        val savedVehicle = vehicleRepo.save(vehicle)
+
+        val vehicleId = savedVehicle.id
+
+        val fileNames = storeFiles(images, vehicleId)
+
+        savedVehicle.images = fileNames
+        val updatedVehicle = vehicleRepo.save(savedVehicle)
+
+
+        return updatedVehicle.toDto()
     }
 
-    fun storeFiles(files: List<MultipartFile>): MutableList<String> {
+    fun storeFiles(files: List<MultipartFile>, vehicleId: UUID): MutableList<String> {
         val fileNames = mutableListOf<String>()
 
         for (file in files) {
             val fileName = "${System.currentTimeMillis()}_${file.originalFilename}"
-            val targetLocation: Path = Path.of(uploadDir).resolve(fileName)
+
+            val targetLocation: Path = Path.of(uploadDir, vehicleId.toString()).resolve(fileName)
 
             try {
+                Files.createDirectories(targetLocation.parent) // Create directories if they don't exist
                 Files.copy(file.inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING)
                 fileNames.add(fileName)
             } catch (ex: IOException) {
@@ -91,9 +102,10 @@ class VehicleService (
         return fileNames
     }
 
-    fun loadFile(fileName: String): Resource {
+    fun loadFile(fileName: String, vehicleId: String): Resource {
         try {
-            val filePath: Path = Paths.get(uploadDir).resolve(fileName)
+            // Include vehicleId in the path
+            val filePath: Path = Path.of(uploadDir, vehicleId).resolve(fileName)
             val resource: Resource = UrlResource(filePath.toUri())
 
             if (resource.exists() && resource.isReadable) {

@@ -50,12 +50,13 @@ class VehicleController (
         }
     }
 
-    @GetMapping("/display/{fileName:.+}")
+    @GetMapping("/display/{folder}/{fileName:.+}")
     fun displayImage(
+        @PathVariable("folder") vehicleId: String,
         @PathVariable("fileName") fileName: String
     ): ResponseEntity<Resource> {
         // Load the file as a Resource
-        val fileResource: Resource = vehicleService.loadFile(fileName)
+        val fileResource: Resource = vehicleService.loadFile(fileName, vehicleId)
 
         // Define Content-Disposition header for inline display
         val contentDisposition = ContentDisposition

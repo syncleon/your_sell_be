@@ -48,7 +48,7 @@ data class Vehicle(
         name = "vehicle_images",
         joinColumns = [JoinColumn(name = "vehicle_id")])
     @Column(name = "image_url")
-    val images: MutableList<String> = mutableListOf(),
+    var images: MutableList<String> = mutableListOf(),
 
     ) : BaseEntity() {
     override fun toString(): String {
