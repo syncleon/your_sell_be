@@ -34,6 +34,8 @@ fun Vehicle.toDto(): VehicleDto {
         sellerId = seller.id,
         sellerUsername = seller.username,
         images = images,
+        onSale = onSale,
+        sold = sold,
         deleted = deleted
     )
 }

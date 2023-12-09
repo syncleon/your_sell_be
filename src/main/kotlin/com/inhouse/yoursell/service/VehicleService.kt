@@ -124,6 +124,8 @@ class VehicleService (
             throw NotFoundException("Vehicle $id not found!")
         }
         vehicle.deleted = true
+        vehicle.images.clear()
         vehicleRepo.save(vehicle)
+
     }
 }

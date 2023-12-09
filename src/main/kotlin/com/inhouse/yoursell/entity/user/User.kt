@@ -1,6 +1,7 @@
 package com.inhouse.yoursell.entity.user
 
 import com.inhouse.yoursell.entity.BaseEntity
+import com.inhouse.yoursell.entity.auction.BidEntity
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import jakarta.persistence.*
 
@@ -36,9 +37,11 @@ data class User(
         orphanRemoval = true,
         fetch = FetchType.EAGER
     )
-    var vehicles: MutableList<Vehicle> = mutableListOf()
+    var vehicles: MutableList<Vehicle> = mutableListOf(),
 
-    ) : BaseEntity() {
+    @OneToMany(mappedBy = "bidder", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
+    var bids: List<BidEntity> = mutableListOf(),
+  ) : BaseEntity() {
     override fun toString(): String {
         return "User(id=$id, " +
                 "username='$username', " +

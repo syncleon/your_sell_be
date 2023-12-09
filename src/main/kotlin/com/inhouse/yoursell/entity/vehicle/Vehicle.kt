@@ -1,10 +1,9 @@
 package com.inhouse.yoursell.entity.vehicle
 
 import com.inhouse.yoursell.entity.BaseEntity
+import com.inhouse.yoursell.entity.auction.AuctionEntity
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
-import org.hibernate.annotations.GenericGenerator
-import org.hibernate.annotations.Type
 import org.hibernate.annotations.UuidGenerator
 import java.util.*
 
@@ -43,12 +42,22 @@ data class Vehicle(
     @Column(name = "deleted", nullable = false)
     var deleted: Boolean = false,
 
+    @Column(name="on_sale", nullable = false)
+    var onSale: Boolean = false,
+
+    @Column(name="sold", nullable = false)
+    var sold: Boolean = false,
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "vehicle_images",
         joinColumns = [JoinColumn(name = "vehicle_id")])
     @Column(name = "image_url")
     var images: MutableList<String> = mutableListOf(),
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "auction_id")
+    var lot: AuctionEntity? = null,
 
     ) : BaseEntity() {
     override fun toString(): String {
@@ -62,6 +71,9 @@ data class Vehicle(
                 "expectedBid=$expectedBid, " +
                 "damaged=$damaged, " +
                 "deleted=$deleted, " +
-                "images=$images)"
+                "onSale=$onSale, " +
+                "sold=$sold, " +
+                "images=$images" +
+                ")"
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 @Transactional
 class UserService(
     private val userRepo: UserRepo,
-    private val vehicleRepo: VehicleRepo
 ) {
     fun findById(id: Long): User {
         val user = userRepo.findById(id)

@@ -31,5 +31,7 @@ data class VehicleDto(
     var sellerId: Long,
     var sellerUsername: String,
     var images: MutableList<String>,
-    var deleted: Boolean
+    var onSale: Boolean,
+    var sold: Boolean,
+    var deleted: Boolean,
 )
