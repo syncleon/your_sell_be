@@ -126,6 +126,5 @@ class VehicleService (
         vehicle.deleted = true
         vehicle.images.clear()
         vehicleRepo.save(vehicle)
-
     }
 }
