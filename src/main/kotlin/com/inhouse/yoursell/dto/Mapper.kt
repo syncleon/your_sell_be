@@ -1,5 +1,7 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.auction.Auction
+import com.inhouse.yoursell.entity.auction.Bid
 import com.inhouse.yoursell.entity.user.Role
 import com.inhouse.yoursell.entity.user.User
 import com.inhouse.yoursell.entity.vehicle.Vehicle
@@ -37,5 +39,23 @@ fun Vehicle.toDto(): VehicleDto {
         onSale = onSale,
         sold = sold,
         deleted = deleted
+    )
+}
+
+fun Bid.toDto(): BidDto {
+    return BidDto(
+        id = id,
+        bidderId = bidder.id,
+        bidAmount = bidAmount,
+        auctionId = auction.id
+    )
+}
+
+fun Auction.toDto(): AuctionDto {
+    return AuctionDto(
+        id = id,
+        auctionCreator = auctionCreator.toDto(),
+        vehicle = vehicle.toDto(),
+        bids = bids.stream().map(Bid::toDto).collect(Collectors.toList())
     )
 }

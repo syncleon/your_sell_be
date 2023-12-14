@@ -1,5 +1,6 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.auction.Bid
 import com.inhouse.yoursell.entity.user.ERole
 import java.util.UUID
 
@@ -34,4 +35,18 @@ data class VehicleDto(
     var onSale: Boolean,
     var sold: Boolean,
     var deleted: Boolean,
+)
+
+data class BidDto(
+    var id: UUID,
+    var bidderId: Long,
+    var bidAmount: Double,
+    var auctionId: UUID
+)
+
+data class AuctionDto(
+    var id: UUID,
+    var auctionCreator: UserDto,
+    var vehicle: VehicleDto,
+    var bids: MutableList<BidDto>
 )

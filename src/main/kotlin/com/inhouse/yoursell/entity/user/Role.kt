@@ -6,9 +6,16 @@ import jakarta.persistence.*
 @Table(name = "roles")
 data class Role (
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(
+        strategy = GenerationType.IDENTITY
+    )
     var id: Long,
-    @Enumerated(EnumType.STRING)
-    @Column(name = "name")
+
+    @Enumerated(
+        EnumType.STRING
+    )
+    @Column(
+        name = "name"
+    )
     var name: ERole = ERole.ROLE_USER
 )

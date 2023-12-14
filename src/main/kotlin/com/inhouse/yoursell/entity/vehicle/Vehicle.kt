@@ -1,7 +1,7 @@
 package com.inhouse.yoursell.entity.vehicle
 
 import com.inhouse.yoursell.entity.BaseEntity
-import com.inhouse.yoursell.entity.auction.AuctionEntity
+import com.inhouse.yoursell.entity.auction.Auction
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
@@ -57,7 +57,7 @@ data class Vehicle(
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id")
-    var lot: AuctionEntity? = null,
+    var lot: Auction? = null,
 
     ) : BaseEntity() {
     override fun toString(): String {

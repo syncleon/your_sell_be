@@ -1,5 +1,7 @@
 package com.inhouse.yoursell.dto
 
+import java.util.*
+
 data class LoginUserDto(
     val username: String,
     val password: String,
@@ -19,3 +21,15 @@ data class RegisterVehicleDto(
     var year: String,
     var expectedBid: Int
 )
+
+data class CreateBid(
+    val auctionId: UUID,
+    val bidAmount: Double,
+)
+
+data class CreateAuctionDto(
+    val auctionCreator: UserDto,
+    val vehicleId: UUID,
+    val reservedPrice : Double
+)
+

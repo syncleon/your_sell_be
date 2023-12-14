@@ -2,7 +2,6 @@ package com.inhouse.yoursell.entity.auction
 
 import com.inhouse.yoursell.entity.BaseEntity
 import com.inhouse.yoursell.entity.user.User
-import com.inhouse.yoursell.entity.vehicle.Vehicle
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
 import java.util.*
@@ -10,7 +9,7 @@ import java.util.*
 
 @Entity
 @Table(name = "bid")
-data class BidEntity(
+data class Bid(
     @Id
     @UuidGenerator
     var id: UUID = UUID.randomUUID(),
@@ -21,12 +20,9 @@ data class BidEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "auction_id")
-    var auction: AuctionEntity,
+    var auction: Auction,
 
     @Column(name = "bid_amount")
-    var bidAmount: Double,
+    var bidAmount: Double
 
-    @Column(name = "bid_status")
-    var bidStatus: Boolean,
-
-    ) : BaseEntity()
+) : BaseEntity()

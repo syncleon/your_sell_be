@@ -20,7 +20,6 @@ import java.io.IOException
 import java.net.MalformedURLException
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 import java.util.*
 
@@ -48,10 +47,6 @@ class VehicleService (
             vehicleDtoList.add(vehicleDto)
         }
         return vehicleDtoList
-    }
-
-    fun findBySeller(user: User): List<Vehicle> {
-        return vehicleRepo.findBySeller(user)
     }
 
     fun createVehicle(

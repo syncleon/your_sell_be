@@ -1,7 +1,8 @@
 package com.inhouse.yoursell.entity.user
 
 import com.inhouse.yoursell.entity.BaseEntity
-import com.inhouse.yoursell.entity.auction.BidEntity
+import com.inhouse.yoursell.entity.auction.Auction
+import com.inhouse.yoursell.entity.auction.Bid
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import jakarta.persistence.*
 
@@ -9,16 +10,30 @@ import jakarta.persistence.*
 @Table(name = "user")
 data class User(
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
-    @SequenceGenerator(name = "user_id_seq", allocationSize = 1)
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "user_id_seq")
+    @SequenceGenerator(
+        name = "user_id_seq",
+        allocationSize = 1)
     var id: Long = 0L,
-    @Column(name = "username", nullable = false)
+
+    @Column(
+        name = "username",
+        nullable = false
+    )
     var username: String = "",
 
-    @Column(name = "password", nullable = false)
+    @Column(
+        name = "password",
+        nullable = false
+    )
     var password: String = "",
 
-    @Column(name = "email", nullable = false)
+    @Column(
+        name = "email",
+        nullable = false
+    )
     var email: String = "",
 
     @ManyToMany(
@@ -39,15 +54,18 @@ data class User(
     )
     var vehicles: MutableList<Vehicle> = mutableListOf(),
 
-    @OneToMany(mappedBy = "bidder", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var bids: List<BidEntity> = mutableListOf(),
-  ) : BaseEntity() {
-    override fun toString(): String {
-        return "User(id=$id, " +
-                "username='$username', " +
-                "password='$password', " +
-                "email='$email', " +
-                "userRoles=$userRoles," +
-                "vehicles=$vehicles)"
-    }
-}
+    @OneToMany(
+        mappedBy = "bidder",
+        cascade = [CascadeType.ALL],
+        fetch = FetchType.LAZY
+    )
+    var bids: List<Bid> = mutableListOf(),
+
+    @OneToOne(
+        mappedBy = "auctionCreator",
+        cascade = [CascadeType.ALL],
+        fetch = FetchType.LAZY)
+    var auction: Auction? = null,
+
+
+    ) : BaseEntity()
