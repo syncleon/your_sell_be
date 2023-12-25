@@ -36,8 +36,4 @@ class Auction (
     )
     var bids: List<Bid> = mutableListOf(),
 
-    @Column(name = "winner_bid")
-    @OneToOne
-    var winnerBid: Bid? = null,
-
 ): BaseEntity()

@@ -57,14 +57,14 @@ data class User(
     @OneToMany(
         mappedBy = "bidder",
         cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY
+        fetch = FetchType.EAGER
     )
     var bids: List<Bid> = mutableListOf(),
 
     @OneToOne(
         mappedBy = "auctionCreator",
         cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY)
+        fetch = FetchType.EAGER)
     var auction: Auction? = null,
 
 
