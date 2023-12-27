@@ -22,14 +22,7 @@ data class RegisterVehicleDto(
     var expectedBid: Int
 )
 
-data class CreateBid(
-    val auctionId: UUID,
-    val bidAmount: Double,
-)
-
-data class CreateAuctionDto(
-    val auctionCreator: UserDto,
-    val vehicleId: UUID,
-    val reservedPrice : Double
+data class AddAuctionDto(
+    val vehicleId: UUID
 )
 

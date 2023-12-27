@@ -45,9 +45,6 @@ data class Vehicle(
     @Column(name="on_sale", nullable = false)
     var onSale: Boolean = false,
 
-    @Column(name="sold", nullable = false)
-    var sold: Boolean = false,
-
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "vehicle_images",
@@ -55,13 +52,13 @@ data class Vehicle(
     @Column(name = "image_url")
     var images: MutableList<String> = mutableListOf(),
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "auction_id")
-    var lot: Auction? = null,
 
-    ) : BaseEntity() {
+    ) : BaseEntity()
+
+{
     override fun toString(): String {
-        return "Vehicle(id=$id, " +
+        return "Vehicle(" +
+                "id=$id, " +
                 "seller=${seller.id}, " +
                 "make='$make', " +
                 "model='$model', " +
@@ -72,7 +69,6 @@ data class Vehicle(
                 "damaged=$damaged, " +
                 "deleted=$deleted, " +
                 "onSale=$onSale, " +
-                "sold=$sold, " +
                 "images=$images" +
                 ")"
     }

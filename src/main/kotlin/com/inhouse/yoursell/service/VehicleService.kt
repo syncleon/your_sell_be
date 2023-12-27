@@ -62,7 +62,7 @@ class VehicleService (
             mileage = payload.mileage,
             vin = payload.vin,
             year = payload.year,
-            expectedBid = payload.expectedBid
+            expectedBid = payload.expectedBid,
         )
         val savedVehicle = vehicleRepo.save(vehicle)
 

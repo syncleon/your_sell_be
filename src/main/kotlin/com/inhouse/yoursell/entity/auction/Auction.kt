@@ -15,25 +15,12 @@ class Auction (
     @UuidGenerator
     var id: UUID = UUID.randomUUID(),
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "user_id")
-    var auctionCreator: User = User(),
+    var auctionOwner: User = User(),
 
-    @OneToOne(
-        mappedBy = "lot",
-        cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY
-    )
-    var vehicle: Vehicle,
-
-    @Column(name="reserved_price")
-    var reservedPrice: Double?,
-
-    @OneToMany(
-        mappedBy = "auction",
-        cascade = [CascadeType.ALL],
-        fetch = FetchType.LAZY
-    )
-    var bids: List<Bid> = mutableListOf(),
+    @OneToOne
+    @JoinColumn(name = "vehicle_id")
+    val vehicle: Vehicle
 
 ): BaseEntity()
