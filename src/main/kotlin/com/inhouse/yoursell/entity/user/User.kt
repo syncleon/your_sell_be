@@ -2,6 +2,7 @@ package com.inhouse.yoursell.entity.user
 
 import com.inhouse.yoursell.entity.BaseEntity
 import com.inhouse.yoursell.entity.auction.Auction
+import com.inhouse.yoursell.entity.bid.Bid
 import com.inhouse.yoursell.entity.vehicle.Vehicle
 import jakarta.persistence.*
 
@@ -60,10 +61,15 @@ data class User(
     )
     var auctions: MutableList<Auction> = mutableListOf(),
 
+    @OneToMany(
+        mappedBy = "bidder",
+        cascade = [CascadeType.ALL],
+        fetch = FetchType.EAGER
+    )
+    var bids: MutableList<Bid> = mutableListOf()
 
-    ) : BaseEntity()
 
-{
+    ) : BaseEntity() {
     override fun toString(): String {
         return "User(" +
                 "id=$id, " +

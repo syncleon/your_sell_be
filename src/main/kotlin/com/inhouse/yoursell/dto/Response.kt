@@ -1,6 +1,9 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.auction.AuctionStatus
 import com.inhouse.yoursell.entity.user.ERole
+import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.UUID
 
 data class LoginResponseDto(
@@ -35,7 +38,20 @@ data class VehicleDto(
     var onSale: Boolean,
     var deleted: Boolean,
 )
+
+data class BidDto (
+    val id: UUID,
+    val bidderId: Long,
+    val bidValue: BigDecimal,
+    val auctionId: UUID
+)
+
 data class AuctionDto(
-    var id: UUID,
-    val vehicle: VehicleDto
+    val id: UUID,
+    val vehicle: VehicleDto,
+    val bids: MutableList<BidDto>,
+    val reservePrice: BigDecimal,
+    val auctionStatus: AuctionStatus,
+    val startedDate: LocalDateTime,
+    val endDate: LocalDateTime
 )

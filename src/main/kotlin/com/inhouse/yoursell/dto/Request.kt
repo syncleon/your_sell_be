@@ -1,5 +1,6 @@
 package com.inhouse.yoursell.dto
 
+import java.math.BigDecimal
 import java.util.*
 
 data class LoginUserDto(
@@ -23,6 +24,17 @@ data class RegisterVehicleDto(
 )
 
 data class AddAuctionDto(
-    val vehicleId: UUID
+    val vehicleId: UUID,
+    val reservePrice: BigDecimal,
+    val auctionDuration: Long
+)
+
+data class CreateBidDto(
+    val bidValue: BigDecimal,
+    val auctionId: UUID
+)
+
+data class UpdateBidDto(
+    val bidValue: BigDecimal
 )
 
