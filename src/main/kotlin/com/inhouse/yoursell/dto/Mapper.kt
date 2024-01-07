@@ -57,8 +57,11 @@ fun Auction.toDto(): AuctionDto {
         vehicle = vehicle.toDto(),
         reservePrice = reservePrice,
         auctionStatus = auctionStatus,
-        startedDate = startDate,
-        endDate = endDate,
-        bids = bids.stream().map(Bid::toDto).collect(Collectors.toList())
+        startTime = startTime,
+        endTime = endTime,
+        bids = bids.stream().map(Bid::toDto).collect(Collectors.toList()),
+        currentMaxBid = currentMaxBid,
+        currentMaxBidderId = currentMaxBidderId
+
     )
 }

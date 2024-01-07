@@ -1,5 +1,6 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.auction.AuctionStatus
 import java.math.BigDecimal
 import java.util.*
 
@@ -23,10 +24,13 @@ data class RegisterVehicleDto(
     var expectedBid: Int
 )
 
-data class AddAuctionDto(
+data class CreateAuctionDto(
     val vehicleId: UUID,
     val reservePrice: BigDecimal,
-    val auctionDuration: Long
+)
+
+data class StartAuctionDto(
+    val duration: String
 )
 
 data class CreateBidDto(

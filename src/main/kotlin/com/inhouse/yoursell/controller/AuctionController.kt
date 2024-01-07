@@ -1,46 +1,73 @@
 package com.inhouse.yoursell.controller
 
-import com.inhouse.yoursell.dto.AddAuctionDto
+import com.inhouse.yoursell.dto.CreateAuctionDto
+import com.inhouse.yoursell.dto.StartAuctionDto
 import com.inhouse.yoursell.service.AuctionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 import java.util.*
 
 
 @RestController
 @RequestMapping("/api/v1/auctions")
-class AuctionController (
-    private val auctionService: AuctionService
-)
+class AuctionController(private val auctionService: AuctionService) {
 
-{
     @PostMapping
     fun createAuction(
         authentication: Authentication,
-        @RequestBody payload: AddAuctionDto
+        @RequestBody payload: CreateAuctionDto
     ): ResponseEntity<Any> {
-        return try{
-            val response = auctionService.createAuctionWithVehicle(authentication, payload)
-            ResponseEntity.accepted().body("Created $response")
-        }
-        catch (e: Exception) {
+        return try {
+            val createdAuction = auctionService.createAuction(authentication, payload)
+            val location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdAuction.id)
+                .toUri()
+            ResponseEntity.created(location).body("Auction created: $createdAuction")
+        } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }
+    }
 
+    @PutMapping("{id}/start")
+    fun startAuction(
+        @PathVariable id: UUID,
+        authentication: Authentication,
+        @RequestBody payload: StartAuctionDto
+    ): ResponseEntity<Any> {
+        return try {
+            val response = auctionService.startAuction(id, authentication, payload,)
+            ResponseEntity.accepted().body(
+                "Auction STARTED from: " +
+                        "${response.startTime} to " +
+                        "${response.endTime}"
+            )
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
+
+    @PutMapping("/{id}/close")
+    fun closeAuction(
+        @PathVariable id: UUID,
+        authentication: Authentication,
+    ): ResponseEntity<Any> {
+        return try {
+            val response = auctionService.closeAuction(authentication, id)
+            ResponseEntity.accepted().body("Auction ${response.id} CLOSED")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
     }
 
     @GetMapping
     fun getAuctions(): ResponseEntity<Any> {
         return try {
-            val response = auctionService.getAuctions()
+            val response = auctionService.findAll()
             ResponseEntity.ok().body(response)
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
@@ -52,8 +79,7 @@ class AuctionController (
         return try {
             val response = auctionService.findById(id)
             ResponseEntity.ok().body(response)
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
         }
     }

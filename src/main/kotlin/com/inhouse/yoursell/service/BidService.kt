@@ -5,6 +5,7 @@ import com.inhouse.yoursell.dto.BidDto
 import com.inhouse.yoursell.dto.CreateBidDto
 import com.inhouse.yoursell.dto.UpdateBidDto
 import com.inhouse.yoursell.dto.toDto
+import com.inhouse.yoursell.entity.auction.AuctionStatus
 import com.inhouse.yoursell.entity.bid.Bid
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.AuctionRepo
@@ -13,6 +14,7 @@ import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 import java.util.*
 
 @Service
@@ -29,20 +31,51 @@ class BidService (
         val auction = auctionRepo.findById(payload.auctionId)
             .orElseThrow { throw NotFoundException("Auction not found.") }
         val existingBid = bidRepo.findByAuctionAndBidder(auction, currentUser)
+        when {
+            existingBid.isPresent -> {
+                throw Exception("User can create only one bid.")
+            }
+            currentUser.id == auction.auctionOwner.id -> {
+                throw Exception("Cannot make bid on your own.")
+            }
+            auction.auctionStatus != AuctionStatus.STARTED -> {
+                throw Exception("Cannot make bid for not STARTED auction.")
+            }
+            payload.bidValue <= BigDecimal.ZERO -> {
+                throw Exception("Bid value must be greater than zero.")
+            }
+            payload.bidValue <= auction.currentMaxBid -> {
+                throw Exception("Cant add bid lower than current.")
+            }
 
-        if (existingBid.isPresent) {
-            throw Exception("User can create only one bid.")
+            else -> {
+                val bid = Bid(
+                    auction = auction,
+                    bidValue = payload.bidValue,
+                    bidder = currentUser
+                )
+                return bidRepo.save(bid).toDto()
+            }
         }
+    }
 
-        if (currentUser.id == auction.auctionOwner.id) {
-            throw Exception("Cannot make bid on your own.")
+    fun updateBid(
+        id: UUID,
+        payload: UpdateBidDto,
+        authentication: Authentication,
+    ): BidDto {
+        val bid = bidRepo.findById(id).orElseThrow {
+            throw NotFoundException("Bid not found.")
         }
-        val bid = Bid(
-            auction = auction,
-            bidValue = payload.bidValue,
-            bidder = currentUser
-        )
-        return bidRepo.save(bid).toDto()
+        when {
+            bid.bidder.id != authentication.toUser().id -> {
+                throw Exception("Cannot update bid.")
+            }
+            payload.bidValue <= bid.bidValue -> {
+                throw Exception("New bid should be bigger then previous")
+            }
+            else -> return bidRepo.save(bid).toDto()
+        }
     }
 
     fun findById(id: UUID): BidDto {
@@ -57,20 +90,5 @@ class BidService (
             bidDtoList.add(bidDto)
         }
         return bidDtoList
-    }
-
-    fun updateBid(
-        id: UUID,
-        payload: UpdateBidDto,
-        authentication: Authentication,
-    ): BidDto {
-        val bid = bidRepo.findById(id).orElseThrow {
-            throw NotFoundException("Bid not found.")
-        }
-        if (bid.bidder.id != authentication.toUser().id) {
-            throw Exception("Cannot update bid.")
-        }
-        bid.bidValue = payload.bidValue
-        return bidRepo.save(bid).toDto()
     }
 }

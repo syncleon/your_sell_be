@@ -29,11 +29,17 @@ class Auction(
     @Column(name = "auction_status", nullable = false)
     var auctionStatus: AuctionStatus,
 
-    @Column(name = "start_date", nullable = false)
-    var startDate: LocalDateTime,
+    @Column(name = "start_time")
+    var startTime: Long = 0L,
 
-    @Column(name = "end_date", nullable = false)
-    var endDate: LocalDateTime,
+    @Column(name = "end_time")
+    var endTime: Long = 0L,
+
+    @Column(name = "max_bid_current")
+    var currentMaxBid: BigDecimal = BigDecimal.ZERO,
+
+    @Column(name = "max_bidder_id")
+    var currentMaxBidderId: Long = 0L,
 
     @Column(name = "reserve_price")
     var reservePrice: BigDecimal,
@@ -43,4 +49,4 @@ class Auction(
         fetch = FetchType.EAGER)
     var bids: MutableList<Bid> = mutableListOf(),
 
-) : BaseEntity()
+    ) : BaseEntity()

@@ -52,6 +52,8 @@ data class AuctionDto(
     val bids: MutableList<BidDto>,
     val reservePrice: BigDecimal,
     val auctionStatus: AuctionStatus,
-    val startedDate: LocalDateTime,
-    val endDate: LocalDateTime
+    val startTime: Long,
+    val endTime: Long,
+    val currentMaxBid: BigDecimal,
+    val currentMaxBidderId: Long
 )
