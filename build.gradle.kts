@@ -35,7 +35,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly ("org.apache.commons:commons-lang3:3.0")
-	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.postgresql:postgresql")
 
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 

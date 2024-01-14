@@ -53,8 +53,8 @@ class AuctionService (
             throw IllegalStateException("Auction ${id} is not in the CREATED state, cannot START.")
         }
 
-        val timestampWeek = 7 * 24 * 60 * 60 * 1000L  // 7 days in milliseconds
-        val timestampMonth = 30 * 24 * 60 * 60 * 1000L  // 30 days in milliseconds
+        val timestampWeek = 7 * 24 * 60 * 60 * 1000L
+        val timestampMonth = 30 * 24 * 60 * 60 * 1000L
 
         auction.auctionStatus = AuctionStatus.STARTED
 
@@ -84,7 +84,6 @@ class AuctionService (
     ): AuctionDto {
         val auction = auctionRepo.findById(id)
             .orElseThrow { throw NotFoundException("Auction not found.") }
-
         if (auction.auctionStatus != AuctionStatus.STARTED) {
             throw IllegalStateException("Auction $id is not in the STARTED state, cannot CLOSE.")
         }

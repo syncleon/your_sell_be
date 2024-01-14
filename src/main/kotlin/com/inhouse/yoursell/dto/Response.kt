@@ -20,7 +20,8 @@ data class UserDto(
     val email: String,
     val userRoles: MutableSet<RoleDto>,
     val vehicles: MutableList<VehicleDto>,
-    val auctions: MutableList<AuctionDto>
+    val auctions: MutableList<AuctionDto>,
+    val bids: MutableList<BidDto>
 )
 
 data class VehicleDto(
@@ -48,6 +49,7 @@ data class BidDto (
 
 data class AuctionDto(
     val id: UUID,
+    val auctionOwner: String,
     val vehicle: VehicleDto,
     val bids: MutableList<BidDto>,
     val reservePrice: BigDecimal,

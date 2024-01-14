@@ -54,6 +54,8 @@ class BidService (
                     bidValue = payload.bidValue,
                     bidder = currentUser
                 )
+                auction.currentMaxBid = payload.bidValue
+                auctionRepo.save(auction)
                 return bidRepo.save(bid).toDto()
             }
         }
@@ -67,14 +69,17 @@ class BidService (
         val bid = bidRepo.findById(id).orElseThrow {
             throw NotFoundException("Bid not found.")
         }
+        val auction = bid.auction
         when {
-            bid.bidder.id != authentication.toUser().id -> {
-                throw Exception("Cannot update bid.")
-            }
             payload.bidValue <= bid.bidValue -> {
                 throw Exception("New bid should be bigger then previous")
             }
-            else -> return bidRepo.save(bid).toDto()
+            else -> {
+                auction.currentMaxBid = payload.bidValue
+                auctionRepo.save(auction)
+                bid.bidValue = payload.bidValue
+                return bidRepo.save(bid).toDto()
+            }
         }
     }
 
