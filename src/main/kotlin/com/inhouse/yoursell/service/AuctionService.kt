@@ -25,45 +25,29 @@ class AuctionService (
         payload: CreateAuctionDto
     ): AuctionDto {
         val vehicleId = payload.vehicleId
+        val duration = payload.duration
         val authUser = authentication.toUser()
+
         val vehicle = vehicleRepo.findByIdAndSeller(vehicleId, authUser).orElseThrow {
             throw NotFoundException("Vehicle not found")
         }
-        val auction = Auction(
-            auctionOwner = authUser,
-            vehicle = vehicle,
-            auctionStatus = AuctionStatus.CREATED,
-            reservePrice = payload.reservePrice
-        )
-        vehicle.onSale = true
-
-        vehicleRepo.save(vehicle)
-
-        return auctionRepo.save(auction).toDto()
-    }
-
-    fun startAuction(
-        id: UUID,
-        authentication: Authentication,
-        payload: StartAuctionDto
-    ): AuctionDto {
-        val auction = auctionRepo.findById(id)
-            .orElseThrow { throw NotFoundException("Auction not found.") }
-        if (auction.auctionStatus != AuctionStatus.CREATED) {
-            throw IllegalStateException("Auction ${id} is not in the CREATED state, cannot START.")
-        }
-
+        val timestampMinute = 60 * 1000L
+        val timestampHour = 60 * 60 * 1000L
+        val timestampDay = 24 * 60 * 60 * 1000L
         val timestampWeek = 7 * 24 * 60 * 60 * 1000L
         val timestampMonth = 30 * 24 * 60 * 60 * 1000L
 
-        auction.auctionStatus = AuctionStatus.STARTED
-
         val startTime = System.currentTimeMillis()
-        val duration = payload.duration
-
-        auction.startTime = startTime
-
         val endTime: Long = when (duration) {
+            "minute" -> {
+                startTime + timestampMinute
+            }
+            "hour" -> {
+                startTime + timestampHour
+            }
+            "day" -> {
+                startTime + timestampDay
+            }
             "week" -> {
                 startTime + timestampWeek
             }
@@ -74,7 +58,18 @@ class AuctionService (
 
             else -> throw IllegalArgumentException("Unsupported duration: ${payload.duration}")
         }
-        auction.endTime = endTime
+        val auction = Auction(
+            auctionOwner = authUser,
+            vehicle = vehicle,
+            auctionStatus = AuctionStatus.STARTED,
+            reservePrice = payload.reservePrice,
+            startTime = startTime,
+            endTime = endTime
+        )
+        vehicle.onSale = true
+
+        vehicleRepo.save(vehicle)
+
         return auctionRepo.save(auction).toDto()
     }
 

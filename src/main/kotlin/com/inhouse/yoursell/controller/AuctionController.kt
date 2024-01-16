@@ -1,7 +1,6 @@
 package com.inhouse.yoursell.controller
 
 import com.inhouse.yoursell.dto.CreateAuctionDto
-import com.inhouse.yoursell.dto.StartAuctionDto
 import com.inhouse.yoursell.service.AuctionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,24 +27,6 @@ class AuctionController(private val auctionService: AuctionService) {
                 .buildAndExpand(createdAuction.id)
                 .toUri()
             ResponseEntity.created(location).body("Auction created: $createdAuction")
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
-        }
-    }
-
-    @PutMapping("{id}/start")
-    fun startAuction(
-        @PathVariable id: UUID,
-        authentication: Authentication,
-        @RequestBody payload: StartAuctionDto
-    ): ResponseEntity<Any> {
-        return try {
-            val response = auctionService.startAuction(id, authentication, payload,)
-            ResponseEntity.accepted().body(
-                "Auction STARTED from: " +
-                        "${response.startTime} to " +
-                        "${response.endTime}"
-            )
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }

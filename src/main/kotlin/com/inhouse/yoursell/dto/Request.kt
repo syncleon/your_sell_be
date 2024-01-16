@@ -27,9 +27,6 @@ data class RegisterVehicleDto(
 data class CreateAuctionDto(
     val vehicleId: UUID,
     val reservePrice: BigDecimal,
-)
-
-data class StartAuctionDto(
     val duration: String
 )
 
