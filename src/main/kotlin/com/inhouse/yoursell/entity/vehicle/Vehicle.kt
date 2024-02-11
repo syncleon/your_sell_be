@@ -45,6 +45,9 @@ data class Vehicle(
     @Column(name="on_sale", nullable = false)
     var onSale: Boolean = false,
 
+    @Column(name="is_sold", nullable = false)
+    var isSold: Boolean = false,
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
         name = "vehicle_images",
@@ -69,6 +72,7 @@ data class Vehicle(
                 "damaged=$damaged, " +
                 "deleted=$deleted, " +
                 "onSale=$onSale, " +
+                "isSold=$isSold, " +
                 "images=$images" +
                 ")"
     }

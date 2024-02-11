@@ -25,19 +25,20 @@ data class UserDto(
 )
 
 data class VehicleDto(
-    var id: UUID,
-    var make: String,
-    var model: String,
-    var mileage: Int,
-    var vin: String,
-    var year: String,
-    var expectedBid: Int,
-    var damaged: Boolean,
-    var sellerId: Long,
-    var sellerUsername: String,
-    var images: MutableList<String>,
-    var onSale: Boolean,
-    var deleted: Boolean,
+    val id: UUID,
+    val make: String,
+    val model: String,
+    val mileage: Int,
+    val vin: String,
+    val year: String,
+    val expectedBid: Int,
+    val damaged: Boolean,
+    val sellerId: Long,
+    val sellerUsername: String,
+    val images: MutableList<String>,
+    val onSale: Boolean,
+    val isSold: Boolean,
+    val deleted: Boolean,
 )
 
 data class BidDto (

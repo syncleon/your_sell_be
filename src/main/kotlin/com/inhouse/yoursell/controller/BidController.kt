@@ -50,18 +50,4 @@ class BidController(
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
         }
     }
-
-    @PutMapping("/{id}")
-    fun updateBidById(
-        authentication: Authentication,
-        @PathVariable id: UUID,
-        @RequestBody payload: UpdateBidDto
-    ): ResponseEntity<Any> {
-        return try {
-            val response = bidService.updateBid(id, payload, authentication)
-            ResponseEntity.accepted().body(response)
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
-        }
-    }
 }

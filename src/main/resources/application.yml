@@ -20,4 +20,4 @@ jwt:
   expiration: 86400000
 
 file:
-  upload-dir: /Users/leonidsidorov/work/uploads
+  upload-dir: /Users/oblapleon/Desktop/uploads

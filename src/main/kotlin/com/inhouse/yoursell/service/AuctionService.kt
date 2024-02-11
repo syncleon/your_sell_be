@@ -79,11 +79,20 @@ class AuctionService (
     ): AuctionDto {
         val auction = auctionRepo.findById(id)
             .orElseThrow { throw NotFoundException("Auction not found.") }
+        val vehicleId = auction.vehicle.id
+        val vehicle = vehicleRepo.findByIdAndSeller(vehicleId, authentication.toUser()).orElseThrow {
+            throw NotFoundException("Vehicle with $vehicleId not found")
+        }
         if (auction.auctionStatus != AuctionStatus.STARTED) {
             throw IllegalStateException("Auction $id is not in the STARTED state, cannot CLOSE.")
         }
         auction.endTime = System.currentTimeMillis()
         auction.auctionStatus = AuctionStatus.CLOSED
+
+        vehicle.isSold = true
+        vehicle.onSale = false
+
+        vehicleRepo.save(vehicle)
         return auctionRepo.save(auction).toDto()
     }
 
