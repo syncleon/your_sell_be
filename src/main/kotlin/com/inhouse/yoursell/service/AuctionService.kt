@@ -73,27 +73,19 @@ class AuctionService (
         return auctionRepo.save(auction).toDto()
     }
 
-    fun closeAuction(
-        authentication: Authentication,
-        id: UUID
-    ): AuctionDto {
-        val auction = auctionRepo.findById(id)
-            .orElseThrow { throw NotFoundException("Auction not found.") }
-        val vehicleId = auction.vehicle.id
-        val vehicle = vehicleRepo.findByIdAndSeller(vehicleId, authentication.toUser()).orElseThrow {
-            throw NotFoundException("Vehicle with $vehicleId not found")
+    fun closeAuctions() {
+        val currentTime = System.currentTimeMillis()
+        val expiredAuctions = auctionRepo.findByEndTimeLessThanAndAuctionStatus(currentTime, AuctionStatus.STARTED)
+        expiredAuctions.forEach { auction ->
+            auction.auctionStatus = AuctionStatus.CLOSED
+            val vehicle = vehicleRepo.findById(auction.vehicle.id).orElseThrow {
+                throw Exception("Vehicle not found.")
+            }
+            vehicle.onSale = false
+            vehicle.isSold = true
+            vehicleRepo.save(vehicle)
+            auctionRepo.save(auction).toDto()
         }
-        if (auction.auctionStatus != AuctionStatus.STARTED) {
-            throw IllegalStateException("Auction $id is not in the STARTED state, cannot CLOSE.")
-        }
-        auction.endTime = System.currentTimeMillis()
-        auction.auctionStatus = AuctionStatus.CLOSED
-
-        vehicle.isSold = true
-        vehicle.onSale = false
-
-        vehicleRepo.save(vehicle)
-        return auctionRepo.save(auction).toDto()
     }
 
     fun findAll(): MutableList<AuctionDto> {

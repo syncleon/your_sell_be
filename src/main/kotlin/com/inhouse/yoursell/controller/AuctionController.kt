@@ -32,16 +32,13 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    @PutMapping("/{id}/close")
-    fun closeAuction(
-        @PathVariable id: UUID,
-        authentication: Authentication,
-    ): ResponseEntity<Any> {
+    @PostMapping("/closeExpired")
+    fun closeExpiredAuctions(): ResponseEntity<Any> {
         return try {
-            val response = auctionService.closeAuction(authentication, id)
-            ResponseEntity.accepted().body("Auction ${response.id} CLOSED")
+            auctionService.closeAuctions()
+            ResponseEntity.ok("Expired auctions closed successfully.")
         } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
         }
     }
 

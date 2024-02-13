@@ -40,6 +40,7 @@ class SecurityConfig(
                     .requestMatchers(HttpMethod.GET, "/api/v1/vehicles/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/auctions/**").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auctions/closeExpired").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/bids/**").permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()
