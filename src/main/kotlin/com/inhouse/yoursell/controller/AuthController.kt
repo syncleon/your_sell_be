@@ -61,7 +61,7 @@ class AuthController(
                 email = payload.email
             )
             roles.add(userRole)
-            user.userRoles = roles
+            user.roles = roles
             val savedUser = userService.save(user)
 
             ResponseEntity.ok().body(

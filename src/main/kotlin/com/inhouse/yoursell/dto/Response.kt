@@ -2,8 +2,6 @@ package com.inhouse.yoursell.dto
 
 import com.inhouse.yoursell.entity.auction.AuctionStatus
 import com.inhouse.yoursell.entity.user.ERole
-import java.math.BigDecimal
-import java.time.LocalDateTime
 import java.util.UUID
 
 data class LoginResponseDto(
@@ -18,45 +16,38 @@ data class UserDto(
     val id: Long,
     val username: String,
     val email: String,
-    val userRoles: MutableSet<RoleDto>,
-    val vehicles: MutableList<VehicleDto>,
+    val items: MutableList<ItemDto>,
     val auctions: MutableList<AuctionDto>,
     val bids: MutableList<BidDto>
 )
 
-data class VehicleDto(
+data class ItemDto(
     val id: UUID,
     val make: String,
     val model: String,
     val mileage: Int,
-    val vin: String,
     val year: String,
-    val expectedBid: Int,
-    val damaged: Boolean,
-    val sellerId: Long,
-    val sellerUsername: String,
     val images: MutableList<String>,
-    val onSale: Boolean,
+    val onAuction: Boolean,
     val isSold: Boolean,
-    val deleted: Boolean,
 )
 
 data class BidDto (
     val id: UUID,
-    val bidderId: Long,
-    val bidValue: BigDecimal,
+    val userId: Long,
+    val value: Double,
+    val isWinning: Boolean,
     val auctionId: UUID
 )
 
 data class AuctionDto(
     val id: UUID,
-    val auctionOwner: String,
-    val vehicle: VehicleDto,
+    val userId: Long,
+    val item: ItemDto,
     val bids: MutableList<BidDto>,
-    val reservePrice: BigDecimal,
+    val currentMaxBid: Double,
+    val expectedPrice: Double,
     val auctionStatus: AuctionStatus,
     val startTime: Long,
-    val endTime: Long,
-    val currentMaxBid: BigDecimal,
-    val currentMaxBidderId: Long
+    val endTime: Long
 )

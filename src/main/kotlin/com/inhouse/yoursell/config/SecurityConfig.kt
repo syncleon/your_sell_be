@@ -8,13 +8,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer.ExpressionInterceptUrlRegistry
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer.JwtConfigurer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.authority.SimpleGrantedAuthority
-import org.springframework.security.oauth2.jwt.JwtDecoder
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException
 import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken
 import org.springframework.security.web.SecurityFilterChain
@@ -37,10 +33,9 @@ class SecurityConfig(
                 authorizeRequests
                     .requestMatchers(HttpMethod.POST, "/api/v1/signin").permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/signup").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/vehicles/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/v1/items/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/images/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/auctions/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auctions/closeExpired").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/bids/**").permitAll()
                     .requestMatchers("/api/v1/**")
                     .authenticated()

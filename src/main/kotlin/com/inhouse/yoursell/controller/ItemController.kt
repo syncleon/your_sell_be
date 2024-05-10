@@ -1,8 +1,8 @@
 package com.inhouse.yoursell.controller
 
-import com.inhouse.yoursell.dto.RegisterVehicleDto
+import com.inhouse.yoursell.dto.CreateItemDto
 import com.inhouse.yoursell.exceptions.NotFoundException
-import com.inhouse.yoursell.service.VehicleService
+import com.inhouse.yoursell.service.ItemService
 import org.springframework.core.io.Resource
 import org.springframework.http.ContentDisposition
 import org.springframework.http.HttpHeaders
@@ -15,35 +15,34 @@ import java.util.*
 
 
 @RestController
-@RequestMapping("/api/v1/vehicles")
-class VehicleController (
-    private val vehicleService: VehicleService
+@RequestMapping("/api/v1/items")
+class ItemController (
+    private val itemService: ItemService
 ) {
     @GetMapping
-    fun getVehicles(): ResponseEntity<Any> {
+    fun getItems(): ResponseEntity<Any> {
         return try {
-            val vehicles = vehicleService.findAll()
-            ResponseEntity.ok().body(vehicles)
+            val items = itemService.findAll()
+            ResponseEntity.ok().body(items)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }
     }
 
     @GetMapping("/{id}")
-    fun getVehicle(
-        @PathVariable id: UUID): ResponseEntity<Any>
+    fun getItem(@PathVariable id: UUID): ResponseEntity<Any>
     {
         return try {
-            ResponseEntity.ok(vehicleService.findById(id))
+            ResponseEntity.ok(itemService.findById(id))
         } catch (e: NotFoundException) {
             ResponseEntity.badRequest().body(e.message)
         }
     }
 
     @GetMapping("/{id}/images")
-    fun getVehicleImages(@PathVariable id: UUID): ResponseEntity<MutableList<String>> {
+    fun getImages(@PathVariable id: UUID): ResponseEntity<MutableList<String>> {
         return try {
-            val images = vehicleService.findById(id).images
+            val images = itemService.findById(id).images
             ResponseEntity.ok().body(images)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(mutableListOf())
@@ -55,44 +54,26 @@ class VehicleController (
         @PathVariable("folder") vehicleId: String,
         @PathVariable("fileName") fileName: String
     ): ResponseEntity<Resource> {
-        // Load the file as a Resource
-        val fileResource: Resource = vehicleService.loadFile(fileName, vehicleId)
-
-        // Define Content-Disposition header for inline display
+        val fileResource: Resource = itemService.loadFile(fileName, vehicleId)
         val contentDisposition = ContentDisposition
             .builder("inline")
             .filename(fileName)
             .build()
-
-        // Return the file as a ResponseEntity
         return ResponseEntity.ok()
             .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-            .contentType(MediaType.IMAGE_JPEG) // Adjust the MediaType as per your image type
+            .contentType(MediaType.IMAGE_JPEG)
             .body(fileResource)
     }
 
     @PostMapping
-    fun createVehicle(
+    fun createItem(
         authentication: Authentication,
-        @RequestPart("payload") payload: RegisterVehicleDto,
+        @RequestPart("payload") payload: CreateItemDto,
         @RequestPart("images") images: MutableList<MultipartFile>
     ): ResponseEntity<Any> {
         return try {
-            val response = vehicleService.createVehicle(authentication, payload, images)
+            val response = itemService.createItem(authentication, payload, images)
             ResponseEntity.accepted().body("Created: $response")
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
-        }
-    }
-
-    @DeleteMapping("/{id}")
-    fun deleteVehicle(
-        authentication: Authentication,
-        @PathVariable id: UUID
-    ): ResponseEntity<Any> {
-        return try {
-            vehicleService.softDeleteVehicle(authentication,id)
-            ResponseEntity.ok().body("Vehicle $id marked to be deleted")
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
         }

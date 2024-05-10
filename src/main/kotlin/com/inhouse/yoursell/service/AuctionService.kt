@@ -6,11 +6,10 @@ import com.inhouse.yoursell.entity.auction.Auction
 import com.inhouse.yoursell.entity.auction.AuctionStatus
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.repo.AuctionRepo
-import com.inhouse.yoursell.repo.VehicleRepo
+import com.inhouse.yoursell.repo.ItemRepo
 import jakarta.transaction.Transactional
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
-import java.math.BigDecimal
 import java.util.*
 
 
@@ -18,18 +17,18 @@ import java.util.*
 @Transactional
 class AuctionService (
     private val auctionRepo: AuctionRepo,
-    private val vehicleRepo: VehicleRepo
+    private val itemRepo: ItemRepo
 ) {
     fun createAuction(
         authentication: Authentication,
         payload: CreateAuctionDto
     ): AuctionDto {
-        val vehicleId = payload.vehicleId
-        val duration = payload.duration
+        val itemId = payload.itemId
+        val auctionDuration = payload.duration
         val authUser = authentication.toUser()
 
-        val vehicle = vehicleRepo.findByIdAndSeller(vehicleId, authUser).orElseThrow {
-            throw NotFoundException("Vehicle not found")
+        val item = itemRepo.findByIdAndUser(itemId, authUser).orElseThrow {
+            throw NotFoundException("Item related to user not found.")
         }
         val timestampMinute = 60 * 1000L
         val timestampHour = 60 * 60 * 1000L
@@ -38,7 +37,7 @@ class AuctionService (
         val timestampMonth = 30 * 24 * 60 * 60 * 1000L
 
         val startTime = System.currentTimeMillis()
-        val endTime: Long = when (duration) {
+        val endTime: Long = when (auctionDuration) {
             "minute" -> {
                 startTime + timestampMinute
             }
@@ -59,33 +58,44 @@ class AuctionService (
             else -> throw IllegalArgumentException("Unsupported duration: ${payload.duration}")
         }
         val auction = Auction(
-            auctionOwner = authUser,
-            vehicle = vehicle,
+            user = authUser,
+            item = item,
             auctionStatus = AuctionStatus.STARTED,
-            reservePrice = payload.reservePrice,
+            expectedPrice = payload.reservePrice,
             startTime = startTime,
             endTime = endTime
         )
-        vehicle.onSale = true
+        item.onAuction = true
 
-        vehicleRepo.save(vehicle)
+        itemRepo.save(item)
 
         return auctionRepo.save(auction).toDto()
     }
 
-    fun closeAuctions() {
-        val currentTime = System.currentTimeMillis()
-        val expiredAuctions = auctionRepo.findByEndTimeLessThanAndAuctionStatus(currentTime, AuctionStatus.STARTED)
-        expiredAuctions.forEach { auction ->
-            auction.auctionStatus = AuctionStatus.CLOSED
-            val vehicle = vehicleRepo.findById(auction.vehicle.id).orElseThrow {
-                throw Exception("Vehicle not found.")
-            }
-            vehicle.onSale = false
-            vehicle.isSold = true
-            vehicleRepo.save(vehicle)
-            auctionRepo.save(auction).toDto()
+    fun restartClosedAuctionById(authentication: Authentication, payload: RestartAuctionDto): AuctionDto {
+        val authUser = authentication.toUser()
+        val auction = auctionRepo.findByIdAndUser(payload.auctionId, authUser).orElseThrow {
+            throw NotFoundException("Auction for user not found.")
         }
+
+        if (auction.auctionStatus != AuctionStatus.CLOSED) {
+            throw IllegalStateException("Auction is not closed and cannot be restarted.")
+        }
+
+        val duration = payload.duration
+        val startTime = System.currentTimeMillis()
+        val endTime: Long = when (duration) {
+            "minute" -> startTime +  60 * 1000L
+            "hour" -> startTime + 60 * 60 * 1000L
+            "day" -> startTime + 24 * 60 * 60 * 1000L
+            "week" -> startTime + 7 * 24 * 60 * 60 * 1000L
+            "month" -> startTime + 30 * 24 * 60 * 60 * 1000L
+            else -> throw IllegalArgumentException("Unsupported duration: ${payload.duration}")
+        }
+        auction.startTime = startTime
+        auction.endTime = endTime
+        auction.auctionStatus = AuctionStatus.STARTED
+        return auctionRepo.save(auction).toDto()
     }
 
     fun findAll(): MutableList<AuctionDto> {
@@ -102,22 +112,23 @@ class AuctionService (
         val auction = auctionRepo.findById(id).orElseThrow {
             throw NotFoundException("Auction not found.")
         }
-
-        var maxBid: BigDecimal = BigDecimal.ZERO
-        var maxBidderId = 0L
-
-        for (bid in auction.bids) {
-            if (bid.bidValue > maxBid) {
-                maxBid = bid.bidValue
-                maxBidderId = bid.bidder.id
-            }
-        }
-
-        auction.currentMaxBid = maxBid
-        auction.currentMaxBidderId = maxBidderId
-
         return auction.toDto()
     }
+
+    fun closeAuctions() {
+        val currentTime = System.currentTimeMillis()
+        val expiredAuctions = auctionRepo.findByEndTimeAndAuctionStatus(currentTime, AuctionStatus.STARTED)
+        for (auction in expiredAuctions) {
+            auction.auctionStatus = AuctionStatus.CLOSED
+            val item = itemRepo.findById(auction.item.id).orElseThrow {
+                throw Exception("Vehicle not found.")
+            }
+            item.onAuction = false
+            itemRepo.save(item)
+            auctionRepo.save(auction).toDto()
+        }
+    }
+
 }
 
 

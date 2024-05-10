@@ -1,6 +1,8 @@
 package com.inhouse.yoursell.controller
 
 import com.inhouse.yoursell.dto.CreateAuctionDto
+import com.inhouse.yoursell.dto.RestartAuctionDto
+import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.service.AuctionService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -32,16 +34,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    @PostMapping("/closeExpired")
-    fun closeExpiredAuctions(): ResponseEntity<Any> {
-        return try {
-            auctionService.closeAuctions()
-            ResponseEntity.ok("Expired auctions closed successfully.")
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
-        }
-    }
-
     @GetMapping
     fun getAuctions(): ResponseEntity<Any> {
         return try {
@@ -59,6 +51,24 @@ class AuctionController(private val auctionService: AuctionService) {
             ResponseEntity.ok().body(response)
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
+        }
+    }
+
+    @PutMapping("/restart")
+    fun restartAuction(
+        authentication: Authentication,
+        @RequestBody payload: RestartAuctionDto
+    ) : ResponseEntity<Any> {
+        return try {
+            val restartedAuction = auctionService.restartClosedAuctionById(authentication, payload)
+            val location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(restartedAuction.id)
+                .toUri()
+            ResponseEntity.created(location).body("Auction restarted: $restartedAuction")
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
         }
     }
 }

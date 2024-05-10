@@ -1,7 +1,6 @@
 package com.inhouse.yoursell.controller
 
 import com.inhouse.yoursell.dto.CreateBidDto
-import com.inhouse.yoursell.dto.UpdateBidDto
 import com.inhouse.yoursell.service.BidService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
