@@ -46,4 +46,9 @@ class UserService(
     fun delete(user: User) {
         return userRepo.delete(user)
     }
+
+    fun isValidEmail(email: String): Boolean {
+        val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
+        return emailRegex.matches(email)
+    }
 }
