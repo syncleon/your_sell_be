@@ -36,6 +36,7 @@ class ItemService (
 
     fun findAll(): MutableList<ItemDto> {
         val itemList = itemRepo.findAll()
+            .sortedByDescending { it.created }
         val itemDtoList = mutableListOf<ItemDto>()
         itemList.forEach { item ->
             val itemDto = item.toDto()
@@ -43,6 +44,7 @@ class ItemService (
         }
         return itemDtoList
     }
+
 
     fun createItem(
         authentication: Authentication,

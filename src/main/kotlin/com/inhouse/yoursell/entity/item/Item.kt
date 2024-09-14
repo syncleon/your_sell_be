@@ -4,7 +4,6 @@ import com.inhouse.yoursell.entity.BaseEntity
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
-import java.math.BigDecimal
 import java.util.*
 
 @Entity
@@ -29,4 +28,8 @@ data class Item(
     @Column(name = "image_url")
     var images: MutableList<String> = mutableListOf(),
 
-    ) : BaseEntity()
+    ) : BaseEntity() {
+    override fun toString(): String {
+        return "Item(id=$id, make='$make', model='$model', mileage=$mileage, year='$year', onAuction=$onAuction, isSold=$isSold, images=${images.size})"
+    }
+}

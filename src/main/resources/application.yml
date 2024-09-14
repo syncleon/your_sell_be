@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: "postgres"
-    password: "admin"
+    username: "admin"
+    password: "root"
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
@@ -20,4 +20,4 @@ jwt:
   expiration: 86400000
 
 file:
-  upload-dir: /Users/oblapleon/Desktop/uploads
+  upload-dir: /Users/leonidoblap/uploads

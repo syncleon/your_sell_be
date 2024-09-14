@@ -49,22 +49,32 @@ class ItemController (
         }
     }
 
-    @GetMapping("/display/{folder}/{fileName:.+}")
-    fun displayImage(
-        @PathVariable("folder") vehicleId: String,
-        @PathVariable("fileName") fileName: String
+    @GetMapping("/{id}/images/{index}")
+    fun getImageByIndex(
+        @PathVariable id: UUID,
+        @PathVariable index: Int
     ): ResponseEntity<Resource> {
-        val fileResource: Resource = itemService.loadFile(fileName, vehicleId)
-        val contentDisposition = ContentDisposition
-            .builder("inline")
-            .filename(fileName)
-            .build()
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
-            .contentType(MediaType.IMAGE_JPEG)
-            .body(fileResource)
+        return try {
+            val images = itemService.findById(id).images
+            if (index in images.indices) {
+                val fileName = images[index]
+                val fileResource: Resource = itemService.loadFile(fileName, id.toString())
+                val contentDisposition = ContentDisposition
+                    .builder("inline")
+                    .filename(fileName)
+                    .build()
+                ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(fileResource)
+            } else {
+                ResponseEntity.notFound().build()
+            }
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().build()
+        }
     }
-
+    
     @PostMapping
     fun createItem(
         authentication: Authentication,

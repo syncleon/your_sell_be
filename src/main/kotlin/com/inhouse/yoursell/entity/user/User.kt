@@ -36,4 +36,8 @@ data class User(
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var bids: MutableList<Bid> = mutableListOf()
 
-    ) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "User(id=$id, username='$username', email='$email', roles=${roles.size}, items=${items.size}, auctions=${auctions.size}, bids=${bids.size})"
+    }
+}

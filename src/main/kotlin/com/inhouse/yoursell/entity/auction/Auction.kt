@@ -22,11 +22,15 @@ class Auction(
     val item: Item,
 
     var auctionStatus: AuctionStatus = AuctionStatus.CREATED,
-    val expectedPrice: Double  = 0.0,
+    val expectedPrice: Double = 0.0,
     var startTime: Long = 0L,
-    var endTime: Long  = 0L,
+    var endTime: Long = 0L,
     var currentMaxBid: Double = 0.0,
     @OneToMany(mappedBy = "auction", cascade = [CascadeType.ALL], fetch = FetchType.EAGER)
     var bids: MutableList<Bid> = mutableListOf(),
 
-    ) : BaseEntity()
+    ) : BaseEntity() {
+    override fun toString(): String {
+        return "Auction(id=$id, userId=${user.id}, itemId=${item.id}, auctionStatus=$auctionStatus, expectedPrice=$expectedPrice, startTime=$startTime, endTime=$endTime, currentMaxBid=$currentMaxBid, bids=${bids.size})"
+    }
+}

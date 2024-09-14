@@ -12,7 +12,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @Entity
-data class Bid (
+data class Bid(
     @Id @UuidGenerator
     var id: UUID = UUID.randomUUID(),
     var bidValue: Double = 0.0,
@@ -22,5 +22,9 @@ data class Bid (
     @ManyToOne @JoinColumn(name = "auction_id")
     var auction: Auction
 
-    ) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "Bid(id=$id, bidValue=$bidValue, isWinningBid=$isWinningBid, userId=${user.id}, auctionId=${auction.id})"
+    }
+}
 
