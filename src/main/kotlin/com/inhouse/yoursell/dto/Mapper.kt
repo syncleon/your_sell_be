@@ -31,7 +31,11 @@ fun Item.toDto(): ItemDto {
         model = model,
         mileage = mileage,
         year = year,
-        images = images,
+        featured = imagesFeatured,
+        exterior = imagesExterior,
+        interior = imagesInterior,
+        other = imagesOther,
+        mechanical = imagesMechanical,
         isSold = isSold,
         onAuction = onAuction
     )

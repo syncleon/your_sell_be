@@ -27,7 +27,11 @@ data class ItemDto(
     val model: String,
     val mileage: Int,
     val year: String,
-    val images: MutableList<String>,
+    val featured: MutableList<String>,
+    val exterior: MutableList<String>,
+    val interior: MutableList<String>,
+    val mechanical: MutableList<String>,
+    val other: MutableList<String>,
     val onAuction: Boolean,
     val isSold: Boolean,
 )

@@ -36,9 +36,9 @@ dependencies {
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 	runtimeOnly ("org.apache.commons:commons-lang3:3.0")
 	implementation("org.postgresql:postgresql")
-
+	implementation("io.springfox:springfox-boot-starter:3.0.0")
+	implementation("org.springdoc:springdoc-openapi-ui:1.7.0")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 }

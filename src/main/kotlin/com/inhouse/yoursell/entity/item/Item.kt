@@ -23,13 +23,51 @@ data class Item(
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-        name = "item_images",
+        name = "item_featured_images",
         joinColumns = [JoinColumn(name = "item_id")])
     @Column(name = "image_url")
-    var images: MutableList<String> = mutableListOf(),
+    var imagesFeatured: MutableList<String> = mutableListOf(),
 
-    ) : BaseEntity() {
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "item_exterior_images",
+        joinColumns = [JoinColumn(name = "item_id")])
+    @Column(name = "image_url")
+    var imagesExterior: MutableList<String> = mutableListOf(),
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "item_interior_images",
+        joinColumns = [JoinColumn(name = "item_id")])
+    @Column(name = "image_url")
+    var imagesInterior: MutableList<String> = mutableListOf(),
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "item_mechanical_images",
+        joinColumns = [JoinColumn(name = "item_id")])
+    @Column(name = "image_url")
+    var imagesMechanical: MutableList<String> = mutableListOf(),
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
+        name = "item_other_images",
+        joinColumns = [JoinColumn(name = "item_id")])
+    @Column(name = "image_url")
+    var imagesOther: MutableList<String> = mutableListOf(),
+) : BaseEntity() {
     override fun toString(): String {
-        return "Item(id=$id, make='$make', model='$model', mileage=$mileage, year='$year', onAuction=$onAuction, isSold=$isSold, images=${images.size})"
+        return "Item(id=$id, " +
+                "make='$make', " +
+                "model='$model', " +
+                "mileage=$mileage, " +
+                "year='$year', " +
+                "onAuction=$onAuction, " +
+                "isSold=$isSold, " +
+                "imagesFeatured=${imagesFeatured.size}, " +
+                "imagesExterior=${imagesExterior.size}, " +
+                "imagesInterior=${imagesInterior.size}, " +
+                "imagesMechanical=${imagesMechanical.size}, " +
+                "imagesOther=${imagesOther.size})"
     }
 }
