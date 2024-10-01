@@ -25,7 +25,7 @@ data class ItemDto(
     val id: UUID,
     val make: String,
     val model: String,
-    val mileage: Int,
+    val mileage: String,
     val year: String,
     val featured: MutableList<String>,
     val exterior: MutableList<String>,

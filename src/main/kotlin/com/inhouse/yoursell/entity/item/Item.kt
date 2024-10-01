@@ -16,7 +16,7 @@ data class Item(
     var user: User = User(),
     var make: String,
     var model: String,
-    var mileage: Int,
+    var mileage: String,
     var year: String,
     var onAuction: Boolean = false,
     var isSold: Boolean = false,

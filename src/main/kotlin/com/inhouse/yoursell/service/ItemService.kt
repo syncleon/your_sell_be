@@ -64,10 +64,7 @@ class ItemService(
     }
 
     fun getImageByCategoryAndFileName(id: UUID, category: String, fileName: String): Resource {
-        // Log inputs for debugging
         println("Fetching file: $fileName in category: $category for item: $id")
-
-        // Validate fileName and category before proceeding
         if (fileName.isBlank() || category.isBlank()) {
             throw IllegalArgumentException("Category or file name cannot be empty.")
         }
@@ -80,7 +77,6 @@ class ItemService(
                 itemId = id.toString(),
                 category = category)
         } else {
-            // Log when file is not found in the category
             println("File $fileName not found in category $category for item $id")
             throw NotFoundException("File $fileName not found")
         }
@@ -95,20 +91,28 @@ class ItemService(
         imagesMechanical: List<MultipartFile> = emptyList(),
         imagesOther: List<MultipartFile> = emptyList()
     ): ItemDto {
-        // Check if the payload is null or invalid
-        if (payload.make.isBlank() || payload.model.isBlank()) {
-            throw IllegalArgumentException("Invalid item payload.")
-        }
 
-        // Handle authentication
+        if (imagesFeatured.size > 1) {
+            throw BadRequestException("Only one featured image can be uploaded.")
+        }
         val authUser = authentication.toUser()
+        when {
+            payload.make.isEmpty() -> {
+                throw BadRequestException("Make couldn't be empty.")
+            }
 
-        // Ensure at least one featured image is provided
-        if (imagesFeatured.isEmpty()) {
-            throw IllegalArgumentException("At least one featured image must be uploaded.")
+            payload.model.isEmpty() -> {
+                throw BadRequestException("Model couldn't be empty.")
+            }
+
+            payload.year.isEmpty() -> {
+                throw BadRequestException("Year couldn't be empty.")
+            }
+
+            payload.mileage.isEmpty() -> {
+                throw BadRequestException("Mileage couldn't be empty.")
+            }
         }
-
-        // Create the item
         val item = Item(
             user = authUser,
             make = payload.make,
@@ -116,22 +120,13 @@ class ItemService(
             mileage = payload.mileage,
             year = payload.year
         )
-
-        // Save the item to the repository
         val savedItem = try {
             itemRepo.save(item)
         } catch (e: Exception) {
             throw RuntimeException("Failed to create item: ${e.message}", e)
         }
-
+        // Store the images
         val itemId = savedItem.id
-
-        // Check the featured images limit
-        if (imagesFeatured.size > 1) {
-            throw BadRequestException("Only one featured image can be uploaded.")
-        }
-
-        // Store files and handle potential storage failures
         try {
             savedItem.imagesFeatured = storeFiles(imagesFeatured, itemId, "featured")
             savedItem.imagesExterior = storeFiles(imagesExterior, itemId, "exterior")
@@ -141,8 +136,7 @@ class ItemService(
         } catch (e: Exception) {
             throw RuntimeException("Failed to store images: ${e.message}", e)
         }
-
-        // Save the updated item and return its DTO
+        // Return the saved item as DTO
         return itemRepo.save(savedItem).toDto()
     }
 
@@ -151,9 +145,7 @@ class ItemService(
         val fileNames = mutableListOf<String>()
 
         files.forEach { file ->
-            // Check if the original filename is empty
             if (file.originalFilename.isNullOrBlank()) {
-                // Skip storing the file and move to the next one
                 return@forEach
             }
 
@@ -175,12 +167,7 @@ class ItemService(
 
     fun loadFile(fileName: String, itemId: String, category: String): Resource {
         try {
-            // Include the category in the file path
             val filePath = Path.of(uploadDir, itemId, category).resolve(fileName)
-
-            // Log the file path for debugging
-            println("Loading file from path: $filePath")
-
             val resource = UrlResource(filePath.toUri())
             if (resource.exists() && resource.isReadable) {
                 return resource

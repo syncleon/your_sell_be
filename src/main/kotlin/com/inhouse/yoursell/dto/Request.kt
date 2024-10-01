@@ -16,7 +16,7 @@ data class RegisterUserDto(
 data class CreateItemDto(
     var make: String,
     var model: String,
-    var mileage: Int,
+    var mileage: String,
     var year: String,
 )
 

@@ -97,16 +97,18 @@ class ItemController (
     fun createItem(
         authentication: Authentication,
         @RequestPart("payload") payload: CreateItemDto,
-        @RequestPart("images_featured") imagesFeatured: List<MultipartFile>,
+        @RequestPart("images_featured", required = true) imagesFeatured: List<MultipartFile>?,
         @RequestPart("images_exterior") imagesExterior: List<MultipartFile>? = emptyList(),
         @RequestPart("images_interior") imagesInterior: List<MultipartFile>? = emptyList(),
         @RequestPart("images_mechanical") imagesMechanical: List<MultipartFile>? = emptyList(),
         @RequestPart("images_other") imagesOther: List<MultipartFile>? = emptyList()
     ): ResponseEntity<Any> {
         return try {
-            if (imagesFeatured.isEmpty()) {
+            if (imagesFeatured.isNullOrEmpty()) {
                 throw BadRequestException("At least one featured image should be provided.")
             }
+
+            // Proceed to create the item
             val response = itemService.createItem(
                 authentication,
                 payload,
@@ -116,9 +118,12 @@ class ItemController (
                 imagesMechanical ?: emptyList(),
                 imagesOther ?: emptyList()
             )
+
+            // Return success response
             ResponseEntity.status(HttpStatus.CREATED).body("Created: $response")
         } catch (e: BadRequestException) {
             ResponseEntity.badRequest().body(e.message)
         }
     }
+
 }
