@@ -126,4 +126,23 @@ class ItemController (
         }
     }
 
+    @DeleteMapping("/{id}")
+    fun deleteItem(
+        authentication: Authentication,
+        @PathVariable id: UUID
+    ): ResponseEntity<Any> {
+        return try {
+            itemService.deleteItem(authentication, id)
+            ResponseEntity.noContent().build() // Return a 204 No Content response
+        } catch (e: NotFoundException) {
+            ResponseEntity.notFound().build()
+        } catch (e: BadRequestException) {
+            ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.message) // Return 403 Forbidden if not authorized
+        } catch (e: Exception) {
+            // Log unexpected exceptions
+            e.printStackTrace()
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.message)
+        }
+    }
+
 }

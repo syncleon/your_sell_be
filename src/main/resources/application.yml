@@ -20,4 +20,4 @@ jwt:
   expiration: 86400000
 
 file:
-  upload-dir: /Users/leonidoblap/uploads
+  upload-dir: /Users/syncleon/app/uploads

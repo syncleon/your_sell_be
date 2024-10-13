@@ -75,7 +75,8 @@ class ItemService(
             return loadFile(
                 fileName = fileName,
                 itemId = id.toString(),
-                category = category)
+                category = category
+            )
         } else {
             println("File $fileName not found in category $category for item $id")
             throw NotFoundException("File $fileName not found")
@@ -164,7 +165,6 @@ class ItemService(
         return fileNames
     }
 
-
     fun loadFile(fileName: String, itemId: String, category: String): Resource {
         try {
             val filePath = Path.of(uploadDir, itemId, category).resolve(fileName)
@@ -176,6 +176,58 @@ class ItemService(
             }
         } catch (ex: MalformedURLException) {
             throw FileStorageException("Malformed URL Exception for file: $fileName", ex)
+        }
+    }
+
+    fun deleteItem(authentication: Authentication, id: UUID) {
+        val item = itemRepo.findById(id).orElseThrow { throw NotFoundException("Item with $id not found!") }
+
+        // Check if the authenticated user is the owner of the item
+        val authUser = authentication.toUser()
+        if (item.user.id != authUser.id) {
+            throw BadRequestException("You are not authorized to delete this item.")
+        }
+
+        // Delete images from storage
+        deleteImagesFromStorage(item)
+
+        // Unlink the item from the user (if necessary)
+        item.user.items.remove(item)
+
+        // Delete the item from the repository
+        itemRepo.delete(item)
+    }
+
+    private fun deleteImagesFromStorage(item: Item) {
+        // Loop through the different image categories and delete files from the storage
+        val categories = listOf(
+            item.imagesFeatured,
+            item.imagesExterior,
+            item.imagesInterior,
+            item.imagesMechanical,
+            item.imagesOther
+        )
+
+        categories.forEach { imageList ->
+            imageList.forEach { imageName ->
+                try {
+                    val filePath = Path.of(uploadDir, item.id.toString(), getCategory(item, imageList)).resolve(imageName)
+                    Files.deleteIfExists(filePath) // Delete the file if it exists
+                } catch (ex: IOException) {
+                    println("Error deleting file $imageName: ${ex.message}")
+                }
+            }
+        }
+    }
+
+    private fun getCategory(item: Item, images: MutableList<String>): String {
+        return when (images) {
+            item.imagesFeatured -> "featured"
+            item.imagesExterior -> "exterior"
+            item.imagesInterior -> "interior"
+            item.imagesMechanical -> "mechanical"
+            item.imagesOther -> "other"
+            else -> throw IllegalArgumentException("Unknown image category")
         }
     }
 }
