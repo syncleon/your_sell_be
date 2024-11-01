@@ -59,4 +59,18 @@ class UserController(
         }
     }
 
+    @GetMapping("/current/items")
+    fun getCurrentUserItems(
+        authentication: Authentication,
+    ): ResponseEntity<Any> {
+        return try {
+            val user = authentication.toUser()
+            val items = userService.findCurrentUserItems(user)
+            ResponseEntity.ok(items)
+        } catch (e: Exception) {
+            ResponseEntity.badRequest().body(e.message)
+        }
+    }
+
+
 }

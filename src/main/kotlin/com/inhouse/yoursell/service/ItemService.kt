@@ -40,7 +40,7 @@ class ItemService(
         return itemList.map { it.toDto() }.toMutableList()
     }
 
-    fun getImagesById(id: UUID): Map<String, MutableList<String>> {
+    fun getImagesById(id: UUID): Map<String, List<String>> {
         val item = findById(id)
         return mapOf(
             "featured" to item.featured,
@@ -51,7 +51,7 @@ class ItemService(
         )
     }
 
-    fun getImagesByCategory(id: UUID, category: String): MutableList<String> {
+    fun getImagesByCategory(id: UUID, category: String): List<String> {
         val item = findById(id)
         return when (category.lowercase()) {
             "featured" -> item.featured
@@ -93,39 +93,49 @@ class ItemService(
         imagesOther: List<MultipartFile> = emptyList()
     ): ItemDto {
 
+        if (imagesFeatured.isNullOrEmpty()) {
+            throw BadRequestException("At least one featured image should be provided.")
+        }
+
         if (imagesFeatured.size > 1) {
             throw BadRequestException("Only one featured image can be uploaded.")
         }
+
         val authUser = authentication.toUser()
+
+        // Validation for additional fields
         when {
-            payload.make.isEmpty() -> {
-                throw BadRequestException("Make couldn't be empty.")
-            }
-
-            payload.model.isEmpty() -> {
-                throw BadRequestException("Model couldn't be empty.")
-            }
-
-            payload.year.isEmpty() -> {
-                throw BadRequestException("Year couldn't be empty.")
-            }
-
-            payload.mileage.isEmpty() -> {
-                throw BadRequestException("Mileage couldn't be empty.")
-            }
+            payload.make.isEmpty() -> throw BadRequestException("Make couldn't be empty.")
+            payload.model.isEmpty() -> throw BadRequestException("Model couldn't be empty.")
+            payload.year.isEmpty() -> throw BadRequestException("Year couldn't be empty.")
+            payload.mileage.isEmpty() -> throw BadRequestException("Mileage couldn't be empty.")
+            payload.price <= 0 -> throw BadRequestException("Price must be greater than zero.")
+            payload.vin.isEmpty() -> throw BadRequestException("VIN couldn't be empty.")
         }
+
         val item = Item(
             user = authUser,
             make = payload.make,
             model = payload.model,
             mileage = payload.mileage,
-            year = payload.year
+            year = payload.year,
+            price = payload.price, // New field
+            color = payload.color, // New field
+            engineSize = payload.engineSize, // New field
+            fuelType = payload.fuelType, // New field
+            transmissionType = payload.transmissionType, // New field
+            condition = payload.condition, // New field
+            location = payload.location, // New field
+            description = payload.description, // New field
+            vin = payload.vin, // New field
         )
+
         val savedItem = try {
             itemRepo.save(item)
         } catch (e: Exception) {
             throw RuntimeException("Failed to create item: ${e.message}", e)
         }
+
         // Store the images
         val itemId = savedItem.id
         try {
@@ -137,10 +147,10 @@ class ItemService(
         } catch (e: Exception) {
             throw RuntimeException("Failed to store images: ${e.message}", e)
         }
+
         // Return the saved item as DTO
         return itemRepo.save(savedItem).toDto()
     }
-
 
     fun storeFiles(files: List<MultipartFile>, itemId: UUID, category: String): MutableList<String> {
         val fileNames = mutableListOf<String>()

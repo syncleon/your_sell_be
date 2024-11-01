@@ -31,15 +31,27 @@ fun Item.toDto(): ItemDto {
         model = model,
         mileage = mileage,
         year = year,
+        price = price,
+        color = color,
+        engineSize = engineSize,
+        fuelType = fuelType,
+        transmissionType = transmissionType,
+        condition = condition,
+        location = location,
+        description = description,
+        vin = vin,
         featured = imagesFeatured,
         exterior = imagesExterior,
         interior = imagesInterior,
         other = imagesOther,
         mechanical = imagesMechanical,
         isSold = isSold,
-        onAuction = onAuction
+        onAuction = onAuction,
+        userId = user.id,
+        username = user.username
     )
 }
+
 
 fun Bid.toDto(): BidDto {
     return BidDto(

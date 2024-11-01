@@ -38,7 +38,7 @@ class ItemController (
     }
 
     @GetMapping("/{id}/images")
-    fun getImages(@PathVariable id: UUID): ResponseEntity<Map<String, MutableList<String>>> {
+    fun getImages(@PathVariable id: UUID): ResponseEntity<Map<String, List<String>>> {
         return try {
             val images = itemService.getImagesById(id)
             ResponseEntity.ok(images)
@@ -51,7 +51,7 @@ class ItemController (
     fun getImagesByCategory(
         @PathVariable id: UUID,
         @PathVariable category: String
-    ): ResponseEntity<MutableList<String>> {
+    ): ResponseEntity<List<String>> {
         return try {
             val images = itemService.getImagesByCategory(id, category)
             if (images.isNotEmpty()) {
@@ -107,8 +107,6 @@ class ItemController (
             if (imagesFeatured.isNullOrEmpty()) {
                 throw BadRequestException("At least one featured image should be provided.")
             }
-
-            // Proceed to create the item
             val response = itemService.createItem(
                 authentication,
                 payload,
@@ -125,6 +123,7 @@ class ItemController (
             ResponseEntity.badRequest().body(e.message)
         }
     }
+
 
     @DeleteMapping("/{id}")
     fun deleteItem(

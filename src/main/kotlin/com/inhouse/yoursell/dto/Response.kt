@@ -22,19 +22,31 @@ data class UserDto(
 )
 
 data class ItemDto(
-    val id: UUID,
-    val make: String,
-    val model: String,
-    val mileage: String,
-    val year: String,
-    val featured: MutableList<String>,
-    val exterior: MutableList<String>,
-    val interior: MutableList<String>,
-    val mechanical: MutableList<String>,
-    val other: MutableList<String>,
-    val onAuction: Boolean,
-    val isSold: Boolean,
+    var id: UUID,
+    var make: String,
+    var model: String,
+    var mileage: String,
+    var year: String,
+    var price: Double,
+    var color: String,
+    var engineSize: String,
+    var fuelType: String,
+    var transmissionType: String,
+    var condition: String,
+    var location: String,
+    var description: String,
+    var vin: String,
+    var featured: List<String>,
+    var exterior: List<String>,
+    var interior: List<String>,
+    var other: List<String>,
+    var mechanical: List<String>,
+    var isSold: Boolean,
+    var onAuction: Boolean,
+    var userId: Long,
+    var username: String
 )
+
 
 data class BidDto (
     val id: UUID,

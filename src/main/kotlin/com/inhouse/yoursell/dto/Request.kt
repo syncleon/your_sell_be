@@ -18,7 +18,17 @@ data class CreateItemDto(
     var model: String,
     var mileage: String,
     var year: String,
+    var price: Double,
+    var color: String,
+    var engineSize: String,
+    var fuelType: String,
+    var transmissionType: String,
+    var condition: String,
+    var location: String,
+    var description: String,
+    var vin: String
 )
+
 
 data class CreateAuctionDto(
     val itemId: UUID,

@@ -1,5 +1,6 @@
 package com.inhouse.yoursell.service
 
+import com.inhouse.yoursell.dto.ItemDto
 import com.inhouse.yoursell.dto.UserDto
 import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.user.User
@@ -50,5 +51,9 @@ class UserService(
     fun isValidEmail(email: String): Boolean {
         val emailRegex = Regex("^\\S+@\\S+\\.\\S+$")
         return emailRegex.matches(email)
+    }
+
+    fun findCurrentUserItems(user: User): List<ItemDto> {
+        return user.toDto().items
     }
 }
