@@ -18,17 +18,19 @@ data class Item(
     var make: String,
     var model: String,
     var mileage: String,
-    var year: String,
-
-    var price: Double,
-    var color: String,
-    var engineSize: String,
-    var fuelType: String,
-    var transmissionType: String,
-    var condition: String,
-    var location: String,
-    var description: String,
     var vin: String,
+    var year: String,
+    var engine: String,
+    var fuelType: String,
+    var transmission: String,
+    var condition: String,
+    var drivetrain: String,
+    var bodyStyle: String,
+    var location: String,
+    var price: Double,
+    var exteriorColor: String,
+    var interiorColor: String,
+    var description: String,
     var onAuction: Boolean = false,
     var isSold: Boolean = false,
 
@@ -69,19 +71,22 @@ data class Item(
 ) : BaseEntity() {
     override fun toString(): String {
         return "Item(id=$id, " +
+                "user=${user.id}, " +  // Displaying user ID
                 "make='$make', " +
                 "model='$model', " +
-                "mileage=$mileage, " +
+                "mileage='$mileage', " +
+                "vin='$vin', " +
                 "year='$year', " +
-                "price=$price, " +  // Added to string representation
-                "color='$color', " +  // Added to string representation
-                "engineSize='$engineSize', " +  // Added to string representation
-                "fuelType='$fuelType', " +  // Added to string representation
-                "transmissionType='$transmissionType', " +  // Added to string representation
-                "condition='$condition', " +  // Added to string representation
-                "location='$location', " +  // Added to string representation
-                "description='$description', " +  // Added to string representation
-                "vin='$vin', " +  // Added to string representation
+                "engine='$engine', " +
+                "fuelType='$fuelType', " +
+                "transmission='$transmission', " +
+                "condition='$condition', " +
+                "drivetrain='$drivetrain', " +
+                "location='$location', " +
+                "price=$price, " +
+                "exteriorColor='$exteriorColor', " +
+                "interiorColor='$interiorColor', " +
+                "description='$description', " +
                 "onAuction=$onAuction, " +
                 "isSold=$isSold, " +
                 "imagesFeatured=${imagesFeatured.size}, " +
@@ -90,4 +95,5 @@ data class Item(
                 "imagesMechanical=${imagesMechanical.size}, " +
                 "imagesOther=${imagesOther.size})"
     }
+
 }

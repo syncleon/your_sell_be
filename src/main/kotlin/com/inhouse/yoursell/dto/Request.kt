@@ -19,14 +19,19 @@ data class CreateItemDto(
     var mileage: String,
     var year: String,
     var price: Double,
-    var color: String,
+    var exteriorColor: String,
+    var interiorColor: String,
     var engineSize: String,
     var fuelType: String,
-    var transmissionType: String,
+    var transmission: String,
     var condition: String,
+    var drivetrain: String,
+    var bodyStyle: String,
     var location: String,
     var description: String,
-    var vin: String
+    var vin: String,
+    var onAuction: Boolean = false,
+    var isSold: Boolean = false
 )
 
 

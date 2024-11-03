@@ -64,21 +64,12 @@ class ItemService(
     }
 
     fun getImageByCategoryAndFileName(id: UUID, category: String, fileName: String): Resource {
-        println("Fetching file: $fileName in category: $category for item: $id")
-        if (fileName.isBlank() || category.isBlank()) {
-            throw IllegalArgumentException("Category or file name cannot be empty.")
-        }
+        if (fileName.isBlank() || category.isBlank()) throw IllegalArgumentException("Category or file name cannot be empty.")
 
         val images = getImagesByCategory(id, category)
-
         if (images.contains(fileName)) {
-            return loadFile(
-                fileName = fileName,
-                itemId = id.toString(),
-                category = category
-            )
+            return loadFile(fileName = fileName, itemId = id.toString(), category = category)
         } else {
-            println("File $fileName not found in category $category for item $id")
             throw NotFoundException("File $fileName not found")
         }
     }
@@ -92,18 +83,11 @@ class ItemService(
         imagesMechanical: List<MultipartFile> = emptyList(),
         imagesOther: List<MultipartFile> = emptyList()
     ): ItemDto {
-
-        if (imagesFeatured.isNullOrEmpty()) {
-            throw BadRequestException("At least one featured image should be provided.")
-        }
-
-        if (imagesFeatured.size > 1) {
-            throw BadRequestException("Only one featured image can be uploaded.")
-        }
+        if (imagesFeatured.isNullOrEmpty()) throw BadRequestException("At least one featured image should be provided.")
+        if (imagesFeatured.size > 1) throw BadRequestException("Only one featured image can be uploaded.")
 
         val authUser = authentication.toUser()
 
-        // Validation for additional fields
         when {
             payload.make.isEmpty() -> throw BadRequestException("Make couldn't be empty.")
             payload.model.isEmpty() -> throw BadRequestException("Model couldn't be empty.")
@@ -119,24 +103,24 @@ class ItemService(
             model = payload.model,
             mileage = payload.mileage,
             year = payload.year,
-            price = payload.price, // New field
-            color = payload.color, // New field
-            engineSize = payload.engineSize, // New field
-            fuelType = payload.fuelType, // New field
-            transmissionType = payload.transmissionType, // New field
-            condition = payload.condition, // New field
-            location = payload.location, // New field
-            description = payload.description, // New field
-            vin = payload.vin, // New field
+            price = payload.price,
+            exteriorColor = payload.exteriorColor,
+            interiorColor = payload.interiorColor,
+            engine = payload.engineSize,
+            fuelType = payload.fuelType,
+            transmission = payload.transmission,
+            bodyStyle = payload.bodyStyle,
+            condition = payload.condition,
+            drivetrain = payload.drivetrain,
+            location = payload.location,
+            description = payload.description,
+            vin = payload.vin,
+            onAuction = payload.onAuction,
+            isSold = payload.isSold
         )
 
-        val savedItem = try {
-            itemRepo.save(item)
-        } catch (e: Exception) {
-            throw RuntimeException("Failed to create item: ${e.message}", e)
-        }
+        val savedItem = itemRepo.save(item)
 
-        // Store the images
         val itemId = savedItem.id
         try {
             savedItem.imagesFeatured = storeFiles(imagesFeatured, itemId, "featured")
@@ -148,17 +132,13 @@ class ItemService(
             throw RuntimeException("Failed to store images: ${e.message}", e)
         }
 
-        // Return the saved item as DTO
         return itemRepo.save(savedItem).toDto()
     }
 
     fun storeFiles(files: List<MultipartFile>, itemId: UUID, category: String): MutableList<String> {
         val fileNames = mutableListOf<String>()
-
         files.forEach { file ->
-            if (file.originalFilename.isNullOrBlank()) {
-                return@forEach
-            }
+            if (file.originalFilename.isNullOrBlank()) return@forEach
 
             val fileName = "${System.currentTimeMillis()}_${file.originalFilename}"
             val targetLocation = Path.of(uploadDir, itemId.toString(), category).resolve(fileName)
@@ -171,7 +151,6 @@ class ItemService(
                 throw FileStorageException("Could not store file $fileName. Please try again!", ex)
             }
         }
-
         return fileNames
     }
 
@@ -191,25 +170,15 @@ class ItemService(
 
     fun deleteItem(authentication: Authentication, id: UUID) {
         val item = itemRepo.findById(id).orElseThrow { throw NotFoundException("Item with $id not found!") }
-
-        // Check if the authenticated user is the owner of the item
         val authUser = authentication.toUser()
-        if (item.user.id != authUser.id) {
-            throw BadRequestException("You are not authorized to delete this item.")
-        }
+        if (item.user.id != authUser.id) throw BadRequestException("You are not authorized to delete this item.")
 
-        // Delete images from storage
         deleteImagesFromStorage(item)
-
-        // Unlink the item from the user (if necessary)
         item.user.items.remove(item)
-
-        // Delete the item from the repository
         itemRepo.delete(item)
     }
 
     private fun deleteImagesFromStorage(item: Item) {
-        // Loop through the different image categories and delete files from the storage
         val categories = listOf(
             item.imagesFeatured,
             item.imagesExterior,
@@ -222,7 +191,7 @@ class ItemService(
             imageList.forEach { imageName ->
                 try {
                     val filePath = Path.of(uploadDir, item.id.toString(), getCategory(item, imageList)).resolve(imageName)
-                    Files.deleteIfExists(filePath) // Delete the file if it exists
+                    Files.deleteIfExists(filePath)
                 } catch (ex: IOException) {
                     println("Error deleting file $imageName: ${ex.message}")
                 }

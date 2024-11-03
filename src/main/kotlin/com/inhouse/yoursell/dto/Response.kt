@@ -28,24 +28,28 @@ data class ItemDto(
     var mileage: String,
     var year: String,
     var price: Double,
-    var color: String,
     var engineSize: String,
     var fuelType: String,
-    var transmissionType: String,
+    var transmission: String,
     var condition: String,
+    var bodyStyle: String,
+    var drivetrain: String,
     var location: String,
     var description: String,
     var vin: String,
+    var exteriorColor: String,
+    var interiorColor: String,
     var featured: List<String>,
     var exterior: List<String>,
     var interior: List<String>,
-    var other: List<String>,
     var mechanical: List<String>,
+    var other: List<String>,
     var isSold: Boolean,
     var onAuction: Boolean,
     var userId: Long,
     var username: String
 )
+
 
 
 data class BidDto (
