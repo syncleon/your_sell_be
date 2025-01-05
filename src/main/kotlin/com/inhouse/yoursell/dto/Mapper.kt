@@ -1,6 +1,7 @@
 package com.inhouse.yoursell.dto
 
 import com.inhouse.yoursell.entity.auction.Auction
+import com.inhouse.yoursell.entity.auction.AuctionDuration
 import com.inhouse.yoursell.entity.bid.Bid
 import com.inhouse.yoursell.entity.user.Role
 import com.inhouse.yoursell.entity.user.User
@@ -67,6 +68,14 @@ fun Bid.toDto(): BidDto {
 }
 
 fun Auction.toDto(): AuctionDto {
+    val durationString = when (duration) {
+        AuctionDuration.MINUTE -> "minute"
+        AuctionDuration.DAY -> "1 day"
+        AuctionDuration.WEEK -> "1 week"
+        AuctionDuration.TWO_WEEKS -> "2 weeks"
+        AuctionDuration.MONTH -> "1 month"
+    }
+
     return AuctionDto(
         id = id,
         userId = user.id,
@@ -76,6 +85,9 @@ fun Auction.toDto(): AuctionDto {
         expectedPrice = expectedPrice,
         auctionStatus = auctionStatus,
         startTime = startTime,
-        endTime = endTime
+        endTime = endTime,
+        isExtended = isExtended,
+        duration = durationString
     )
 }
+

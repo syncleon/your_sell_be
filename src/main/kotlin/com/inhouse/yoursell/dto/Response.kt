@@ -50,8 +50,6 @@ data class ItemDto(
     var username: String
 )
 
-
-
 data class BidDto (
     val id: UUID,
     val userId: Long,
@@ -69,5 +67,8 @@ data class AuctionDto(
     val expectedPrice: Double,
     val auctionStatus: AuctionStatus,
     val startTime: Long,
-    val endTime: Long
+    val endTime: Long,
+    val isExtended: Boolean,
+    val duration: String
 )
+

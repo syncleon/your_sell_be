@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/postgres
-    username: "admin"
+    username: "postgres"
     password: "root"
     driver-class-name: org.postgresql.Driver
   jpa:
@@ -20,4 +20,4 @@ jwt:
   expiration: 86400000
 
 file:
-  upload-dir: /Users/syncleon/app/uploads
+  upload-dir: /Users/leonsync/uploads

@@ -7,6 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface AuctionRepo : JpaRepository<Auction, UUID> {
-    fun findByEndTimeAndAuctionStatus(currentTime: Long, auctionStatus: AuctionStatus): MutableList<Auction>
+    fun findByEndTimeLessThanAndAuctionStatus(currentTime: Long, auctionStatus: AuctionStatus): MutableList<Auction>
     fun findByIdAndUser(id: UUID, user: User): Optional<Auction>
+
+    // New methods
+    fun findByAuctionStatus(auctionStatus: AuctionStatus): List<Auction>
+    fun findByUserId(userId: Long): List<Auction>
 }

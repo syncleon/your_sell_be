@@ -1,5 +1,7 @@
 package com.inhouse.yoursell.dto
 
+import com.inhouse.yoursell.entity.auction.AuctionDuration
+import jakarta.validation.constraints.Min
 import java.util.*
 
 data class LoginUserDto(
@@ -37,13 +39,16 @@ data class CreateItemDto(
 
 data class CreateAuctionDto(
     val itemId: UUID,
+    @field:Min(0)
     val reservePrice: Double,
-    val duration: String
+    val duration: AuctionDuration,
+    val isExtended: Boolean = false // Added to manage auction extension
 )
 
 data class RestartAuctionDto(
     val auctionId: UUID,
-    val duration: String
+    val duration: AuctionDuration,
+    val isExtended: Boolean = false // Added for extending auction
 )
 
 data class CreateBidDto(
