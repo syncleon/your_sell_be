@@ -16,7 +16,6 @@ import java.util.*
 @RequestMapping("/api/v1/auctions")
 class AuctionController(private val auctionService: AuctionService) {
 
-    // Create a new auction
     @PostMapping
     fun createAuction(
         authentication: Authentication,
@@ -39,7 +38,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Get all auctions
     @GetMapping
     fun getAuctions(): ResponseEntity<Any> {
         return try {
@@ -50,7 +48,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Get auction by ID
     @GetMapping("/{id}")
     fun getById(@PathVariable id: UUID): ResponseEntity<Any> {
         return try {
@@ -63,7 +60,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Restart a closed auction
     @PutMapping("/restart")
     fun restartAuction(
         authentication: Authentication,
@@ -83,7 +79,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Get auctions by status (e.g., active, closed)
     @GetMapping("/status/{status}")
     fun getAuctionsByStatus(@PathVariable status: String): ResponseEntity<Any> {
         return try {
@@ -97,7 +92,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Get auctions by user ID
     @GetMapping("/user/{userId}")
     fun getAuctionsByUser(@PathVariable userId: Long): ResponseEntity<Any> {
         return try {
@@ -110,7 +104,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Extend auction duration
     @PutMapping("/extend/{auctionId}")
     fun extendAuction(
         @PathVariable auctionId: UUID,
@@ -128,7 +121,6 @@ class AuctionController(private val auctionService: AuctionService) {
         }
     }
 
-    // Delete auction by ID
     @DeleteMapping("/{id}")
     fun deleteAuction(@PathVariable id: UUID): ResponseEntity<Any> {
         return try {

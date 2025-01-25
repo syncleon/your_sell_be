@@ -1,6 +1,7 @@
 package com.inhouse.yoursell.entity.item
 
 import com.inhouse.yoursell.entity.BaseEntity
+import com.inhouse.yoursell.entity.auction.Auction
 import com.inhouse.yoursell.entity.user.User
 import jakarta.persistence.*
 import org.hibernate.annotations.UuidGenerator
@@ -33,6 +34,9 @@ data class Item(
     var description: String,
     var onAuction: Boolean = false,
     var isSold: Boolean = false,
+
+    @OneToMany(mappedBy = "item", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
+    var auctions: MutableList<Auction> = mutableListOf(),
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -71,7 +75,7 @@ data class Item(
 ) : BaseEntity() {
     override fun toString(): String {
         return "Item(id=$id, " +
-                "user=${user.id}, " +  // Displaying user ID
+                "user=${user.id}, " +
                 "make='$make', " +
                 "model='$model', " +
                 "mileage='$mileage', " +
@@ -89,11 +93,11 @@ data class Item(
                 "description='$description', " +
                 "onAuction=$onAuction, " +
                 "isSold=$isSold, " +
+                "auctions=${auctions.size}, " +
                 "imagesFeatured=${imagesFeatured.size}, " +
                 "imagesExterior=${imagesExterior.size}, " +
                 "imagesInterior=${imagesInterior.size}, " +
                 "imagesMechanical=${imagesMechanical.size}, " +
                 "imagesOther=${imagesOther.size})"
     }
-
 }

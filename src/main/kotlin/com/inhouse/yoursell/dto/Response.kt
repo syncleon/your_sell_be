@@ -17,7 +17,6 @@ data class UserDto(
     val username: String,
     val email: String,
     val items: MutableList<ItemDto>,
-    val auctions: MutableList<AuctionDto>,
     val bids: MutableList<BidDto>
 )
 
@@ -47,7 +46,8 @@ data class ItemDto(
     var isSold: Boolean,
     var onAuction: Boolean,
     var userId: Long,
-    var username: String
+    var username: String,
+    var auctions: MutableList<AuctionDto>
 )
 
 data class BidDto (
@@ -61,14 +61,14 @@ data class BidDto (
 data class AuctionDto(
     val id: UUID,
     val userId: Long,
-    val item: ItemDto,
+    val itemId: UUID,
+    val auctionStatus: AuctionStatus,
     val bids: MutableList<BidDto>,
     val currentMaxBid: Double,
     val expectedPrice: Double,
-    val auctionStatus: AuctionStatus,
+    val isExtended: Boolean,
+    val duration: String,
     val startTime: Long,
     val endTime: Long,
-    val isExtended: Boolean,
-    val duration: String
 )
 

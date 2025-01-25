@@ -24,7 +24,12 @@ data class Bid(
 
 ) : BaseEntity() {
     override fun toString(): String {
-        return "Bid(id=$id, bidValue=$bidValue, isWinningBid=$isWinningBid, userId=${user.id}, auctionId=${auction.id})"
+        return "Bid(" +
+                "id=$id, " +
+                "bidValue=$bidValue, " +
+                "isWinningBid=$isWinningBid, " +
+                "userId=${user.id}, " +
+                "auctionId=${auction.id})"
     }
 }
 

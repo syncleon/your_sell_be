@@ -20,7 +20,6 @@ fun User.toDto(): UserDto {
         username=username,
         email=email,
         items = items.stream().map(Item::toDto).collect(Collectors.toList()),
-        auctions = auctions.stream().map(Auction::toDto).collect(Collectors.toList()),
         bids = bids.stream().map(Bid::toDto).collect(Collectors.toList())
     )
 }
@@ -52,7 +51,8 @@ fun Item.toDto(): ItemDto {
         isSold = isSold,
         onAuction = onAuction,
         userId = user.id,
-        username = user.username
+        username = user.username,
+        auctions = auctions.stream().map(Auction::toDto).collect(Collectors.toList()),
     )
 }
 
@@ -79,7 +79,7 @@ fun Auction.toDto(): AuctionDto {
     return AuctionDto(
         id = id,
         userId = user.id,
-        item = item.toDto(),
+        itemId = item.id,
         bids = bids.stream().map(Bid::toDto).collect(Collectors.toList()),
         currentMaxBid = currentMaxBid,
         expectedPrice = expectedPrice,

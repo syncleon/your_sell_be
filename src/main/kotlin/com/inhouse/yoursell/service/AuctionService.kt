@@ -61,6 +61,12 @@ class AuctionService(
             throw NotFoundException("Auction for user not found.")
         }
 
+        val item = itemRepo.findById(auction.item.id).orElseThrow {
+            throw Exception("Item not found.")
+        }
+        item.onAuction = true
+        itemRepo.save(item)
+
         if (auction.auctionStatus != AuctionStatus.CLOSED) {
             throw IllegalStateException("Auction is not closed and cannot be restarted.")
         }
@@ -77,7 +83,7 @@ class AuctionService(
         return auctionRepo.save(auction).toDto()
     }
 
-    @Scheduled(fixedRate = 60000)  // Runs every 60 seconds
+    @Scheduled(fixedRate = 5000)  // Runs every 5 sec
     fun closeExpiredAuctionsAutomatically() {
         val currentTime = System.currentTimeMillis()
         log.info("Closing expired auctions automatically {}", currentTime)
