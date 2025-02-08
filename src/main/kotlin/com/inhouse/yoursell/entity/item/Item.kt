@@ -14,29 +14,39 @@ data class Item(
     var id: UUID = UUID.randomUUID(),
 
     @ManyToOne @JoinColumn(name = "user_id")
-    var user: User = User(),
+    var user: User? = null,
 
+    @Column(nullable = false)
     var make: String,
+
+    @Column(nullable = false)
     var model: String,
-    var mileage: String,
-    var vin: String,
+
+    var mileage: String? = null,
+    var vin: String? = null,
     var year: String,
-    var engine: String,
-    var fuelType: String,
-    var transmission: String,
-    var condition: String,
-    var drivetrain: String,
-    var bodyStyle: String,
-    var location: String,
+
+    var engine: String? = null,
+    var fuelType: String? = null,
+    var transmission: String? = null,
+    var condition: String? = null,
+    var drivetrain: String? = null,
+    var bodyStyle: String? = null,
+    var location: String? = null,
+    @Column(nullable = false)
     var price: Double,
-    var exteriorColor: String,
-    var interiorColor: String,
-    var description: String,
+    var exteriorColor: String? = null,
+    var interiorColor: String? = null,
+    var description: String? = null,
     var onAuction: Boolean = false,
     var isSold: Boolean = false,
 
-    @OneToMany(mappedBy = "item", cascade = [CascadeType.ALL], fetch = FetchType.EAGER, orphanRemoval = true)
-    var auctions: MutableList<Auction> = mutableListOf(),
+    @OneToOne(
+        mappedBy = "item",
+        cascade = [CascadeType.ALL],
+        fetch = FetchType.EAGER,
+        orphanRemoval = true)
+    var auction: Auction? = null,
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
@@ -75,7 +85,7 @@ data class Item(
 ) : BaseEntity() {
     override fun toString(): String {
         return "Item(id=$id, " +
-                "user=${user.id}, " +
+                "user=${user?.id}, " +
                 "make='$make', " +
                 "model='$model', " +
                 "mileage='$mileage', " +
@@ -93,7 +103,7 @@ data class Item(
                 "description='$description', " +
                 "onAuction=$onAuction, " +
                 "isSold=$isSold, " +
-                "auctions=${auctions.size}, " +
+                "auction=${auction}, " +
                 "imagesFeatured=${imagesFeatured.size}, " +
                 "imagesExterior=${imagesExterior.size}, " +
                 "imagesInterior=${imagesInterior.size}, " +

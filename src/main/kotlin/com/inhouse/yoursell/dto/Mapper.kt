@@ -1,17 +1,13 @@
-package com.inhouse.yoursell.dto
-
+import com.inhouse.yoursell.dto.*
 import com.inhouse.yoursell.entity.auction.Auction
-import com.inhouse.yoursell.entity.auction.AuctionDuration
 import com.inhouse.yoursell.entity.bid.Bid
+import com.inhouse.yoursell.entity.item.Item
 import com.inhouse.yoursell.entity.user.Role
 import com.inhouse.yoursell.entity.user.User
-import com.inhouse.yoursell.entity.item.Item
 import java.util.stream.Collectors
 
-fun Role.toDto(): RoleDto{
-    return RoleDto(
-        name = name
-    )
+fun Role.toDto(): RoleDto {
+    return RoleDto(name = name)
 }
 
 fun User.toDto(): UserDto {
@@ -32,7 +28,7 @@ fun Item.toDto(): ItemDto {
         mileage = mileage,
         year = year,
         price = price,
-        engineSize = engine,
+        engine = engine,
         fuelType = fuelType,
         transmission = transmission,
         bodyStyle = bodyStyle,
@@ -43,19 +39,18 @@ fun Item.toDto(): ItemDto {
         vin = vin,
         exteriorColor = exteriorColor,
         interiorColor = interiorColor,
-        featured = imagesFeatured,
-        exterior = imagesExterior,
-        interior = imagesInterior,
-        other = imagesOther,
-        mechanical = imagesMechanical,
+        imagesFeatured = imagesFeatured,
+        imagesExterior = imagesExterior,
+        imagesInterior = imagesInterior,
+        imagesMechanical = imagesMechanical,
+        imagesOther = imagesOther,
         isSold = isSold,
         onAuction = onAuction,
-        userId = user.id,
-        username = user.username,
-        auctions = auctions.stream().map(Auction::toDto).collect(Collectors.toList()),
+        userId = user?.id,
+        username = user?.username ?: "Unknown",
+        auction = auction?.toDto()
     )
 }
-
 
 fun Bid.toDto(): BidDto {
     return BidDto(
@@ -68,26 +63,23 @@ fun Bid.toDto(): BidDto {
 }
 
 fun Auction.toDto(): AuctionDto {
-    val durationString = when (duration) {
-        AuctionDuration.MINUTE -> "minute"
-        AuctionDuration.DAY -> "1 day"
-        AuctionDuration.WEEK -> "1 week"
-        AuctionDuration.TWO_WEEKS -> "2 weeks"
-        AuctionDuration.MONTH -> "1 month"
-    }
-
     return AuctionDto(
         id = id,
         userId = user.id,
         itemId = item.id,
-        bids = bids.stream().map(Bid::toDto).collect(Collectors.toList()),
-        currentMaxBid = currentMaxBid,
-        expectedPrice = expectedPrice,
         auctionStatus = auctionStatus,
+        bids = bids.stream().map(Bid::toDto).collect(Collectors.toList()),
+        currentHighestBid = currentHighestBid,
+        expectedPrice = expectedPrice,
+        reservePrice = reservePrice,
+        winningBidId = winningBidId,
+        duration = duration,
         startTime = startTime,
         endTime = endTime,
+        bidCount = bidCount,
         isExtended = isExtended,
-        duration = durationString
+        isAutoExtendEnabled = isAutoExtendEnabled,
+        autoExtendDuration = autoExtendDuration
     )
 }
 

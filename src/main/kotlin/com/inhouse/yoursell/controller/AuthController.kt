@@ -25,12 +25,12 @@ class AuthController(
     private val jwtTokenProvider: JwtTokenProvider,
     private val userService: UserService,
     private val roleRepo: RoleRepo
-    ) {
+) {
 
     @PostMapping("/signin")
     fun login(@RequestBody payload: LoginUserDto): ResponseEntity<Any> {
-        return try {
-            if(payload.username.isEmpty() || payload.password.isEmpty()) {
+        return handleAuthRequest {
+            if (payload.username.isEmpty() || payload.password.isEmpty()) {
                 throw BadRequestException("Username or password cannot be empty.")
             }
             if (!userService.existsByName(payload.username)) {
@@ -40,28 +40,17 @@ class AuthController(
             if (!hashing.checkBcrypt(payload.password, user.password)) {
                 throw UnauthorizedException("Incorrect password.")
             }
-            ResponseEntity.ok().body(
-                LoginResponseDto(
-                    token = jwtTokenProvider.createToken(user)
-                )
+            LoginResponseDto(
+                token = jwtTokenProvider.createToken(user)
             )
-        } catch (e: BadRequestException) {
-            ResponseEntity.badRequest().body(e.message)
-        } catch (e: NotFoundException) {
-            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
-        } catch (e: UnauthorizedException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.")
         }
     }
 
-
     @PostMapping("/signup")
     fun signup(@RequestBody payload: RegisterUserDto): ResponseEntity<Any> {
-        val userRole = roleRepo.findByName(ERole.ROLE_USER)
-        val roles = mutableSetOf<Role>()
-        return try {
+        return handleAuthRequest {
+            val userRole = roleRepo.findByName(ERole.ROLE_USER)
+            val roles = mutableSetOf<Role>()
             if (payload.username.isEmpty() || payload.password.isEmpty()) {
                 throw BadRequestException("Username or password cannot be empty.")
             }
@@ -80,13 +69,22 @@ class AuthController(
             user.roles = roles
             val savedUser = userService.save(user)
 
-            ResponseEntity.ok().body(
-                LoginResponseDto(
-                    token = jwtTokenProvider.createToken(savedUser)
-                )
+            LoginResponseDto(
+                token = jwtTokenProvider.createToken(savedUser)
             )
+        }
+    }
+
+    private fun handleAuthRequest(action: () -> Any): ResponseEntity<Any> {
+        return try {
+            val response = action()
+            ResponseEntity.ok().body(response)
         } catch (e: BadRequestException) {
             ResponseEntity.badRequest().body(e.message)
+        } catch (e: NotFoundException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.message)
+        } catch (e: UnauthorizedException) {
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.message)
         } catch (e: AlreadyExistsException) {
             ResponseEntity.status(HttpStatus.CONFLICT).body(e.message)
         } catch (e: InvalidDataException) {

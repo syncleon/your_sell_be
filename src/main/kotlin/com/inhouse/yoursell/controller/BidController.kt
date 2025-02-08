@@ -9,32 +9,26 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
-
 @RestController
 @RequestMapping("/api/v1/bids")
 class BidController(
-    @Autowired val bidService: BidService
+    @Autowired private val bidService: BidService
 ) {
+
     @PostMapping
     fun createBid(
         authentication: Authentication,
         @RequestBody payload: CreateBidDto
     ): ResponseEntity<Any> {
-        return try {
-            val response = bidService.createBid(payload, authentication)
-            ResponseEntity.accepted().body(response)
-        } catch (e: Exception) {
-            ResponseEntity.badRequest().body(e.message)
+        return handleRequest {
+            bidService.placeBid(payload, authentication)
         }
     }
 
     @GetMapping
     fun getBids(): ResponseEntity<Any> {
-        return try {
-            val response = bidService.findAll()
-            ResponseEntity.ok().body(response)
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")
+        return handleRequest {
+            bidService.getAllBids()
         }
     }
 
@@ -42,8 +36,14 @@ class BidController(
     fun getById(
         @PathVariable id: UUID
     ): ResponseEntity<Any> {
+        return handleRequest {
+            bidService.getBidById(id)
+        }
+    }
+
+    private fun handleRequest(action: () -> Any): ResponseEntity<Any> {
         return try {
-            val response = bidService.findById(id)
+            val response = action()
             ResponseEntity.ok().body(response)
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: ${e.message}")

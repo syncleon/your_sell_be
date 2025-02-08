@@ -21,7 +21,7 @@ class ItemController (
     @GetMapping
     fun getItems(): ResponseEntity<Any> {
         return try {
-            val items = itemService.findAll()
+            val items = itemService.getAllItems()
             ResponseEntity.ok().body(items)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(e.message)
@@ -31,7 +31,7 @@ class ItemController (
     @GetMapping("/{id}")
     fun getItem(@PathVariable id: UUID): ResponseEntity<Any> {
         return try {
-            ResponseEntity.ok(itemService.findById(id))
+            ResponseEntity.ok(itemService.getItemById(id))
         } catch (e: NotFoundException) {
             ResponseEntity.badRequest().body(e.message)
         }
@@ -40,7 +40,7 @@ class ItemController (
     @GetMapping("/{id}/images")
     fun getImages(@PathVariable id: UUID): ResponseEntity<Map<String, List<String>>> {
         return try {
-            val images = itemService.getImagesById(id)
+            val images = itemService.getItemImages(id)
             ResponseEntity.ok(images)
         } catch (e: Exception) {
             ResponseEntity.badRequest().body(emptyMap())
@@ -107,7 +107,7 @@ class ItemController (
             if (imagesFeatured.isNullOrEmpty()) {
                 throw BadRequestException("At least one featured image should be provided.")
             }
-            val response = itemService.createItem(
+            val response = itemService.createNewItem(
                 authentication,
                 payload,
                 imagesFeatured,

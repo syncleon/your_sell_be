@@ -38,6 +38,12 @@ data class User(
 
 ) : BaseEntity() {
     override fun toString(): String {
-        return "User(id=$id, username='$username', email='$email', roles=${roles.size}, items=${items.size}, auctions=${auctions.size}, bids=${bids.size})"
+        return "User(id=$id, " +
+                "username='$username', " +
+                "email='$email', " +
+                "roles=${roles.size}, " +
+                "items=${items.size}, " +
+                "auctions=${auctions.size}, " +
+                "bids=${bids.size})"
     }
 }

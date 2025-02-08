@@ -18,37 +18,42 @@ data class RegisterUserDto(
 data class CreateItemDto(
     var make: String,
     var model: String,
-    var mileage: String,
+    var mileage: String? = null,  // Optional field
     var year: String,
     var price: Double,
-    var exteriorColor: String,
-    var interiorColor: String,
-    var engineSize: String,
-    var fuelType: String,
-    var transmission: String,
-    var condition: String,
-    var drivetrain: String,
-    var bodyStyle: String,
-    var location: String,
-    var description: String,
-    var vin: String,
+    var exteriorColor: String? = null,  // Optional field
+    var interiorColor: String? = null,  // Optional field
+    var engineSize: String? = null,  // Optional field
+    var fuelType: String? = null,  // Optional field
+    var transmission: String? = null,  // Optional field
+    var condition: String? = null,  // Optional field
+    var drivetrain: String? = null,  // Optional field
+    var bodyStyle: String? = null,  // Optional field
+    var location: String? = null,  // Optional field
+    var description: String? = null,  // Optional field
+    var vin: String? = null,  // Optional field
     var onAuction: Boolean = false,
     var isSold: Boolean = false
 )
-
 
 data class CreateAuctionDto(
     val itemId: UUID,
     @field:Min(0)
     val reservePrice: Double,
     val duration: AuctionDuration,
-    val isExtended: Boolean = false // Added to manage auction extension
+    val isExtended: Boolean = false,
+    val isAutoExtendEnabled: Boolean = false,
+    val autoExtendDuration: Long = 1 * 60 * 1000L
 )
 
 data class RestartAuctionDto(
     val auctionId: UUID,
+    @field:Min(0)
+    val reservePrice: Double,
     val duration: AuctionDuration,
-    val isExtended: Boolean = false // Added for extending auction
+    val isExtended: Boolean = false,
+    val isAutoExtendEnabled: Boolean = false,
+    val autoExtendDuration: Long = 1 * 60 * 1000L
 )
 
 data class CreateBidDto(

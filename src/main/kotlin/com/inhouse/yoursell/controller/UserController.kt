@@ -1,12 +1,12 @@
 package com.inhouse.yoursell.controller
 
 import com.inhouse.yoursell.config.toUser
-import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.exceptions.NotFoundException
 import com.inhouse.yoursell.service.UserService
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.*
+import toDto
 
 
 @RestController

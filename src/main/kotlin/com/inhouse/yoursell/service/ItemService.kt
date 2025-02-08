@@ -3,7 +3,6 @@ package com.inhouse.yoursell.service
 import com.inhouse.yoursell.config.toUser
 import com.inhouse.yoursell.dto.CreateItemDto
 import com.inhouse.yoursell.dto.ItemDto
-import com.inhouse.yoursell.dto.toDto
 import com.inhouse.yoursell.entity.item.Item
 import com.inhouse.yoursell.exceptions.BadRequestException
 import com.inhouse.yoursell.exceptions.FileStorageException
@@ -17,6 +16,7 @@ import org.springframework.core.io.UrlResource
 import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import toDto
 import java.io.IOException
 import java.net.MalformedURLException
 import java.nio.file.Files
@@ -30,39 +30,55 @@ class ItemService(
     @Autowired private val itemRepo: ItemRepo,
     @Value("\${file.upload-dir}") private val uploadDir: String
 ) {
-    fun findById(id: UUID): ItemDto {
+
+    /**
+     * Retrieves an item by its ID.
+     */
+    fun getItemById(id: UUID): ItemDto {
         val item = itemRepo.findById(id).orElseThrow { throw NotFoundException("Item with $id not found!") }
         return item.toDto()
     }
 
-    fun findAll(): MutableList<ItemDto> {
+    /**
+     * Retrieves all items, sorted by creation date.
+     */
+    fun getAllItems(): MutableList<ItemDto> {
         val itemList = itemRepo.findAll().sortedByDescending { it.created }
         return itemList.map { it.toDto() }.toMutableList()
     }
 
-    fun getImagesById(id: UUID): Map<String, List<String>> {
-        val item = findById(id)
+    /**
+     * Retrieves all images for an item.
+     */
+    fun getItemImages(id: UUID): Map<String, List<String>> {
+        val item = getItemById(id)
         return mapOf(
-            "featured" to item.featured,
-            "exterior" to item.exterior,
-            "interior" to item.interior,
-            "mechanical" to item.mechanical,
-            "other" to item.other
+            "featured" to item.imagesFeatured,
+            "exterior" to item.imagesExterior,
+            "interior" to item.imagesInterior,
+            "mechanical" to item.imagesMechanical,
+            "other" to item.imagesOther
         )
     }
 
+    /**
+     * Retrieves images by category for an item.
+     */
     fun getImagesByCategory(id: UUID, category: String): List<String> {
-        val item = findById(id)
+        val item = getItemById(id)
         return when (category.lowercase()) {
-            "featured" -> item.featured
-            "exterior" -> item.exterior
-            "interior" -> item.interior
-            "mechanical" -> item.mechanical
-            "other" -> item.other
+            "featured" -> item.imagesFeatured
+            "exterior" -> item.imagesExterior
+            "interior" -> item.imagesInterior
+            "mechanical" -> item.imagesMechanical
+            "other" -> item.imagesOther
             else -> mutableListOf()
         }
     }
 
+    /**
+     * Retrieves a specific image by category and filename for an item.
+     */
     fun getImageByCategoryAndFileName(id: UUID, category: String, fileName: String): Resource {
         if (fileName.isBlank() || category.isBlank()) throw IllegalArgumentException("Category or file name cannot be empty.")
 
@@ -74,7 +90,10 @@ class ItemService(
         }
     }
 
-    fun createItem(
+    /**
+     * Creates a new item with the provided details and images.
+     */
+    fun createNewItem(
         authentication: Authentication,
         payload: CreateItemDto,
         imagesFeatured: List<MultipartFile>,
@@ -83,19 +102,9 @@ class ItemService(
         imagesMechanical: List<MultipartFile> = emptyList(),
         imagesOther: List<MultipartFile> = emptyList()
     ): ItemDto {
-        if (imagesFeatured.isNullOrEmpty()) throw BadRequestException("At least one featured image should be provided.")
-        if (imagesFeatured.size > 1) throw BadRequestException("Only one featured image can be uploaded.")
+        validateItemData(payload, imagesFeatured)
 
         val authUser = authentication.toUser()
-
-        when {
-            payload.make.isEmpty() -> throw BadRequestException("Make couldn't be empty.")
-            payload.model.isEmpty() -> throw BadRequestException("Model couldn't be empty.")
-            payload.year.isEmpty() -> throw BadRequestException("Year couldn't be empty.")
-            payload.mileage.isEmpty() -> throw BadRequestException("Mileage couldn't be empty.")
-            payload.price <= 0 -> throw BadRequestException("Price must be greater than zero.")
-            payload.vin.isEmpty() -> throw BadRequestException("VIN couldn't be empty.")
-        }
 
         val item = Item(
             user = authUser,
@@ -120,14 +129,12 @@ class ItemService(
         )
 
         val savedItem = itemRepo.save(item)
-
-        val itemId = savedItem.id
         try {
-            savedItem.imagesFeatured = storeFiles(imagesFeatured, itemId, "featured")
-            savedItem.imagesExterior = storeFiles(imagesExterior, itemId, "exterior")
-            savedItem.imagesInterior = storeFiles(imagesInterior, itemId, "interior")
-            savedItem.imagesMechanical = storeFiles(imagesMechanical, itemId, "mechanical")
-            savedItem.imagesOther = storeFiles(imagesOther, itemId, "other")
+            savedItem.imagesFeatured = storeFiles(imagesFeatured, savedItem.id, "featured")
+            savedItem.imagesExterior = storeFiles(imagesExterior, savedItem.id, "exterior")
+            savedItem.imagesInterior = storeFiles(imagesInterior, savedItem.id, "interior")
+            savedItem.imagesMechanical = storeFiles(imagesMechanical, savedItem.id, "mechanical")
+            savedItem.imagesOther = storeFiles(imagesOther, savedItem.id, "other")
         } catch (e: Exception) {
             throw RuntimeException("Failed to store images: ${e.message}", e)
         }
@@ -135,6 +142,9 @@ class ItemService(
         return itemRepo.save(savedItem).toDto()
     }
 
+    /**
+     * Stores image files in the appropriate directory.
+     */
     fun storeFiles(files: List<MultipartFile>, itemId: UUID, category: String): MutableList<String> {
         val fileNames = mutableListOf<String>()
         files.forEach { file ->
@@ -154,6 +164,9 @@ class ItemService(
         return fileNames
     }
 
+    /**
+     * Loads a specific file from storage.
+     */
     fun loadFile(fileName: String, itemId: String, category: String): Resource {
         try {
             val filePath = Path.of(uploadDir, itemId, category).resolve(fileName)
@@ -168,16 +181,22 @@ class ItemService(
         }
     }
 
+    /**
+     * Deletes an item and its associated images from storage.
+     */
     fun deleteItem(authentication: Authentication, id: UUID) {
         val item = itemRepo.findById(id).orElseThrow { throw NotFoundException("Item with $id not found!") }
         val authUser = authentication.toUser()
-        if (item.user.id != authUser.id) throw BadRequestException("You are not authorized to delete this item.")
+        if (item.user?.id != authUser.id) throw BadRequestException("You are not authorized to delete this item.")
 
         deleteImagesFromStorage(item)
-        item.user.items.remove(item)
+        item.user?.items?.remove(item)
         itemRepo.delete(item)
     }
 
+    /**
+     * Deletes all images associated with an item from storage.
+     */
     private fun deleteImagesFromStorage(item: Item) {
         val categories = listOf(
             item.imagesFeatured,
@@ -199,6 +218,9 @@ class ItemService(
         }
     }
 
+    /**
+     * Determines the category of images for an item.
+     */
     private fun getCategory(item: Item, images: MutableList<String>): String {
         return when (images) {
             item.imagesFeatured -> "featured"
@@ -207,6 +229,21 @@ class ItemService(
             item.imagesMechanical -> "mechanical"
             item.imagesOther -> "other"
             else -> throw IllegalArgumentException("Unknown image category")
+        }
+    }
+
+    /**
+     * Validates the item data before creating a new item.
+     */
+    private fun validateItemData(payload: CreateItemDto, imagesFeatured: List<MultipartFile>) {
+        if (imagesFeatured.isNullOrEmpty()) throw BadRequestException("At least one featured image should be provided.")
+        if (imagesFeatured.size > 1) throw BadRequestException("Only one featured image can be uploaded.")
+
+        when {
+            payload.make.isEmpty() -> throw BadRequestException("Make couldn't be empty.")
+            payload.model.isEmpty() -> throw BadRequestException("Model couldn't be empty.")
+            payload.year.isEmpty() -> throw BadRequestException("Year couldn't be empty.")
+            payload.price <= 0 -> throw BadRequestException("Price must be greater than zero.")
         }
     }
 }
